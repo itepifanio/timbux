@@ -21,8 +21,8 @@ tokens :-
   $alpha+                                                   { \p s -> Name p s }
   \"$alpha+\"                                               { \p s -> String p s}
   ($digit+|$digit+\.$digit+)                                { \p s -> Number p (read s)} -- nao referenciado pelo alex
-  $alpha+\=\=$alpha+                                        { \p s -> Logic p s} -- nao consegui fazer com espacos (pega valor name)
-  ($digit|\+|\-|\*|\-|\#)+                                  { \p s -> Expr p s} -- sem espacos tambem
+  $alpha+(\=\=|\<|\>|\<\=|\>\=)$alpha+                      { \p s -> Logic p s} -- nao consegui fazer com espacos (pega valor name)
+  ($digit|\+|\-|\*|\-|\#|\/)+                               { \p s -> Expr p s} -- sem espacos tambem
   -- (int|float|string|array)\w+\s?\=?\s?(?:(\d+|\*+|\++)*)?  { \p s -> TypeDef p s} regex pronto, mas o alex nao reconhece
   
   -- funtion regex function\((\w+|,)+\)\{
