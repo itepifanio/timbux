@@ -14,8 +14,10 @@ tokens :-
 
   $white+                                                   ;
   "--".*                                                    ;
+  Let $whitespace[$alpha $digit \_ \']*                     { \p s -> Let p s } 
+  Ghbc                                                      { \p s -> Ghbc p s } 
   $digit+                                                   { \p s -> Int p (read s) }
-  $op                                                       { \p s -> Op p (head s) }
+  $op                                                       { \p s -> Op p (head s) } 
   $digit+\.$digit+                                          { \p s -> Float p (read s) }
   (int|float|string|array)$whitespace[$alpha $digit \_ \']* { \p s -> Var p s}
   $alpha+                                                   { \p s -> Name p s }
@@ -38,8 +40,12 @@ data Token =
     Number  AlexPosn String |
     Logic   AlexPosn String |
     Expr    AlexPosn String |
-    -- TypeDef AlexPosn String |
-    Float  AlexPosn Double
+    TypeDef AlexPosn String |
+    Float  AlexPosn Double  |
+    Let     AlexPosn String |
+    Ghbc    AlexPosn String 
+    
+
 	deriving (Eq,Show)
 
 main = do
