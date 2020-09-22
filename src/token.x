@@ -1,5 +1,5 @@
 {
-    module Lexer where
+  module Main (main) where
 }
 
 %wrapper "posn"
