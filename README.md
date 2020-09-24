@@ -10,7 +10,7 @@ Usuários sobre a linguagem: "aaaaaaaaaaaaAAAAAAAAAAAAAaaAAAaa"
 
 # Get it working
 
-`alex ./src/token.x`<br>
-`ghc ./src/token.hs`<br>
-`./src/token < ./program/program.pe`<br>
+`alex ./src/token.x`<br><br>
+`ghc ./src/token.hs`<br><br>
+`./src/token < ./program/program.pe`<br><br>
 
