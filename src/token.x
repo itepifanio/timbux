@@ -18,26 +18,29 @@ tokens :-
   Ghbc                                                      { \p s -> Ghbc p s } 
   $blockBegin                                               { \p s -> BlockBegin p (head s) } 
   $blockEnd                                                 { \p s -> BlockEnd p (head s) } 
-  $digit+                                                   { \p s -> Int p (read s) }
   (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p s -> ComparativeOp p s}
+  (\&+\&|\|+\||\!)                                          { \p s -> LogicalOp p s}
   $op                                                       { \p s -> Op p (head s) } 
+  $digit+                                                   { \p s -> Int p (read s) }
   $digit+\.$digit+                                          { \p s -> Float p (read s) }
-  (int|float|string|array)                                  { \p s -> PrimitiveType p s}
+  (true|false)                                              { \p s -> Boolean p s }
+  (int|float|string|array|boolean)                          { \p s -> PrimitiveType p s}
   (if|else|elsif|for|while|const|var)                       { \p s -> Keyword p s}
   $alpha+                                                   { \p s -> Name p s }
 {
 
 data Token =
-	  In              AlexPosn		    |
+	  --In              AlexPosn		    |
 	  Op              AlexPosn Char	  |
 	  Int             AlexPosn Int    |
-    Var             AlexPosn String |
+    --Var             AlexPosn String |
     Name            AlexPosn String |
     String          AlexPosn String |
     Number          AlexPosn String |
-    Logic           AlexPosn String |
-    Expr            AlexPosn String |
-    TypeDef         AlexPosn String |
+    Boolean         AlexPosn String |
+    --Logic           AlexPosn String |
+    --Expr            AlexPosn String |
+    --TypeDef         AlexPosn String |
     Float           AlexPosn Double |
     Let             AlexPosn String |
     Ghbc            AlexPosn String |
@@ -45,7 +48,8 @@ data Token =
     BlockBegin      AlexPosn Char	  |
     BlockEnd        AlexPosn Char	  |
     Keyword         AlexPosn String |
-    ComparativeOp   AlexPosn String
+    ComparativeOp   AlexPosn String |
+    LogicalOp       AlexPosn String 
 	deriving (Eq,Show)
 
 main = do
