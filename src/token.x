@@ -8,10 +8,8 @@ $digit = 0-9			-- digits
 $alpha = [a-zA-Z]		-- alphabetic characters
 $op = [\#\=\+\-\*]      -- operacoes
 $whitespace = [\ \t\b]
-$equal = [\=\=]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
-
 tokens :-
 
   $white+                                                   ;
@@ -21,18 +19,12 @@ tokens :-
   $blockBegin                                               { \p s -> BlockBegin p (head s) } 
   $blockEnd                                                 { \p s -> BlockEnd p (head s) } 
   $digit+                                                   { \p s -> Int p (read s) }
+  (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p s -> ComparativeOp p s}
   $op                                                       { \p s -> Op p (head s) } 
   $digit+\.$digit+                                          { \p s -> Float p (read s) }
-  $alpha+                                                   { \p s -> Name p s }
   (int|float|string|array)                                  { \p s -> PrimitiveType p s}
-
-  \"$alpha+\"                                               { \p s -> String p s}
-  ($digit+|$digit+\.$digit+)                                { \p s -> Number p (read s)} -- nao referenciado pelo alex
-  $alpha+(\=\=|\<|\>|\<\=|\>\=)$alpha+                      { \p s -> Logic p s} -- nao consegui fazer com espacos (pega valor name)
-  --($digit|\+|\-|\*|\-|\#|\/)+                               { \p s -> Expr p s} -- sem espacos tambem
-  -- (int|float|string|array)\w+\s?\=?\s?(?:(\d+|\*+|\++)*)?  { \p s -> TypeDef p s} regex pronto, mas o alex nao reconhece
-  --(int|float|string|array)$whitespace[$alpha $digit \_ \']* { \p s -> Var p s}
-  -- funtion regex function\((\w+|,)+\)\{
+  (if|else|elsif|for|while|const|var)                       { \p s -> Keyword p s}
+  $alpha+                                                   { \p s -> Name p s }
 {
 
 data Token =
@@ -51,7 +43,9 @@ data Token =
     Ghbc            AlexPosn String |
     PrimitiveType   AlexPosn String |
     BlockBegin      AlexPosn Char	  |
-    BlockEnd        AlexPosn Char	  
+    BlockEnd        AlexPosn Char	  |
+    Keyword         AlexPosn String |
+    ComparativeOp   AlexPosn String
 	deriving (Eq,Show)
 
 main = do
