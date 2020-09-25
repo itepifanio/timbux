@@ -10,6 +10,7 @@ $op = [\#\=\+\-\*]      -- operacoes
 $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
+$comma = [\,\"\'\;]
 tokens :-
 
   $white+                                                   ;
@@ -25,22 +26,20 @@ tokens :-
   $digit+\.$digit+                                          { \p s -> Float p (read s) }
   (true|false)                                              { \p s -> Boolean p s }
   (int|float|string|array|boolean)                          { \p s -> PrimitiveType p s}
-  (if|else|elsif|for|while|const|var)                       { \p s -> Keyword p s}
+  (if|else|for|continue|break|while|const|var)              { \p s -> Keyword p s}
+  $comma                                                    { \p s -> Comma p (head s)}        
   $alpha+                                                   { \p s -> Name p s }
+
 {
 
 data Token =
-	  --In              AlexPosn		    |
 	  Op              AlexPosn Char	  |
+    Comma           AlexPosn Char   |
 	  Int             AlexPosn Int    |
-    --Var             AlexPosn String |
     Name            AlexPosn String |
     String          AlexPosn String |
     Number          AlexPosn String |
     Boolean         AlexPosn String |
-    --Logic           AlexPosn String |
-    --Expr            AlexPosn String |
-    --TypeDef         AlexPosn String |
     Float           AlexPosn Double |
     Let             AlexPosn String |
     Ghbc            AlexPosn String |
