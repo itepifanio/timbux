@@ -1,14 +1,14 @@
 Let crossProduct
-    array vet1 = [1, 2, 3]
-    array vet2 = [1, 2, -1]
-    array result = a # b
-    array correctAnswer = [-8, 4, 0]
+    array vetA = [1, 2, 3];
+    array vetB = [1, 2, -1];
+    array result = a # b;
+    array correctAnswer = [-8, 4, 0];
 
-    boolean isCorrect = true
+    boolean isCorrect = true;
     for(int i = 0; i <= 2; i++){
         if(!(result[i] == correctAnswer[i])){
-            isCorrect = false
-            break
+            isCorrect = false;
+            break;
         }
-    }  
+    }
 Ghbc
