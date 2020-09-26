@@ -1,7 +1,7 @@
 Let crossProduct
     array vetA = [1, 2, 3];
     array vetB = [1, 2, -1];
-    array result = a # b;
+    array result = vetA # vetB;
     array correctAnswer = [-8, 4, 0];
 
     boolean isCorrect = true;
