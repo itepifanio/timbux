@@ -1,5 +1,5 @@
 {
-  module Main (main) where
+  module Lexer where
 }
 
 %wrapper "posn"
@@ -25,7 +25,7 @@ tokens :-
   $digit+                                                   { \p s -> Int p (read s) }
   $digit+\.$digit+                                          { \p s -> Float p (read s) }
   (true|false)                                              { \p s -> Boolean p s }
-  (int|float|string|array|boolean)                          { \p s -> PrimitiveType p s}
+  (int|float|string|array|boolean|matrix)                   { \p s -> PrimitiveType p s}
   (if|else|for|continue|break|while|const|var)              { \p s -> Keyword p s}
   $comma                                                    { \p s -> Comma p (head s)}        
   $alpha+                                                   { \p s -> Name p s }

@@ -10,7 +10,12 @@ Usuários sobre a linguagem: "aaaaaaaaaaaaAAAAAAAAAAAAAaaAAAaa"
 
 # Get it working
 
-`alex ./src/token.x`<br><br>
-`ghc ./src/token.hs`<br><br>
-`./src/token < ./program/program.pe`<br><br>
+`alex ./src/lexer.x`<br><br>
+`ghc ./src/lexer.hs`<br><br>
+`./src/lexer < ./program/program.pe`<br><br>
+
+```shell
+// Rodando tudo em uma linha
+alex ./src/lexer.x && ghc ./src/lexer.hs && ./src/lexer < ./program/program.pe && ghci src/parser.hs src/lexer.hs src/typedata/matrix.hs
+```
 

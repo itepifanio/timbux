@@ -1,3 +1,5 @@
+module Typedata.Matrix where
+
 import Data.List
 
 data Matrix a = Matrix [[a]]
