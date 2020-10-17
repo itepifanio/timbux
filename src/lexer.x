@@ -51,6 +51,16 @@ data Token =
     LogicalOp       AlexPosn String 
 	deriving (Eq,Show)
 
+-- tem que remover o main adicionar 
+{-
+getTokens fn = unsafePerformIO (getTokensAux fn)
+
+getTokensAux fn = do {fh <- openFile fn ReadMode;
+                      s <- hGetContents fh;
+                      return (alexScanTokens s)}
+}
+-}
+
 main = do
   s <- getContents
   print (alexScanTokens s)
