@@ -1,22 +1,26 @@
 {
   module Lexer where
+  import System.IO
+  import System.IO.Unsafe
 }
 
-%wrapper "posn"
+%wrapper "basic"
 
 $digit = 0-9			-- digits
 $alpha = [a-zA-Z]		-- alphabetic characters
-$op = [\#\=\+\-\*]      -- operacoes
+$op = [\#\+\-\*]      -- operacoes
 $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
-$comma = [\,\"\'\;]
+$comma = [\,\"\']
 tokens :-
 
   $white+                                                   ;
   "--".*                                                    ;
-  Let                                                       { \p s -> Let p s } 
-  Ghbc                                                      { \p s -> Ghbc p s } 
+  Let                                                       { \p   -> Let  } 
+  Ghbc                                                      { \p   -> Ghbc }
+  "="                                                       { \p   -> Assign }
+  ";"                                                       { \p   -> Semicolon }
   $blockBegin                                               { \p s -> BlockBegin p (head s) } 
   $blockEnd                                                 { \p s -> BlockEnd p (head s) } 
   (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p s -> ComparativeOp p s}
@@ -41,8 +45,9 @@ data Token =
     Number          AlexPosn String |
     Boolean         AlexPosn String |
     Float           AlexPosn Double |
-    Let             AlexPosn String |
-    Ghbc            AlexPosn String |
+    Let                             |
+    Ghbc                            |
+    Assign                          |
     PrimitiveType   AlexPosn String |
     BlockBegin      AlexPosn Char	  |
     BlockEnd        AlexPosn Char	  |
@@ -51,17 +56,10 @@ data Token =
     LogicalOp       AlexPosn String 
 	deriving (Eq,Show)
 
--- tem que remover o main adicionar 
-{-
+
 getTokens fn = unsafePerformIO (getTokensAux fn)
 
 getTokensAux fn = do {fh <- openFile fn ReadMode;
                       s <- hGetContents fh;
                       return (alexScanTokens s)}
-}
--}
-
-main = do
-  s <- getContents
-  print (alexScanTokens s)
 }
