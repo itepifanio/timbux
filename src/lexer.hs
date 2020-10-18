@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "lexer.x" #-}
 
-module Lexer where
+module Lexer( Token (..) ) where
 import System.IO
 import System.IO.Unsafe
 
@@ -9766,7 +9766,6 @@ data Token =
     Comma           Char    |
 	  Int             Int     |
     Name            String  |
-    String          String  |
     Number          String  |
     Boolean         String  |
     Float           Double  |
@@ -9779,9 +9778,9 @@ data Token =
     BlockEnd        Char	  |
     Keyword         String  |
     ComparativeOp   String  |
+    String          Char String Char |
     LogicalOp       String 
 	deriving (Eq,Show)
-
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
 
