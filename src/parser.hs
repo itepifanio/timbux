@@ -13,14 +13,23 @@ endToken = tokenPrim show update_pos get_token where
     get_token Ghbc = Just Ghbc
     get_token _    = Nothing
 
-backslashNToken :: Parsec [Token] st Token
-backslashNToken = tokenPrim show update_pos get_token where
-  get_token BackslashN = Just backslashN
+idToken = tokenPrim show update_pos get_token where
+  get_token (Name x) = Just (Name x)
+  get_token _      = Nothing
+
+semicolonToken :: Parsec [Token] st Token
+semicolonToken = tokenPrim show update_pos get_token where
+  get_token Semicolon = Just Semicolon
   get_token _         = Nothing
 
 assignToken = tokenPrim show update_pos get_token where
     get_token Assign = Just Assign
     get_token _      = Nothing
+
+intToken = tokenPrim show update_pos get_token where
+  get_token (Int x) = Just (Int x)
+  get_token (String x) = Just (String x)
+  get_token _       = Nothing
 
 update_pos :: SourcePos -> Token -> [Token] -> SourcePos
 update_pos pos _ (tok:_) = pos -- necessita melhoria (Não sei o que é isso.)
@@ -32,7 +41,7 @@ stmt = do
         b <- stmts
         c <- endToken
         eof
-        return ([a] ++ d ++ [c])  -- Como o programa é estruturado: 'a' e 'c' início e fim dos códigos, 'd' os statements
+        return ([a] ++ b ++ [c])  -- Como o programa é estruturado: 'a' e 'c' início e fim dos códigos, 'd' os statements
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
@@ -42,19 +51,20 @@ stmts = do
 
 assign :: Parsec [Token] st [Token]
 assign = do
-          a <- assignToken
-          b <- intToken
-          return (a:[b])
+          a <- idToken
+          b <- assignToken
+          c <- intToken
+          return (a:b:[c])
 
 remaining_stmts :: Parsec [Token] st [Token]
-remaining_stmts = (do a <- backslashNToken
+remaining_stmts = (do a <- semicolonToken
                       b <- assign
                       return (a:b)) <|> (return [])
 
 -- invocação do parser para o símbolo de partida 
 
 parser :: [Token] -> Either ParseError [Token]
-parser tokens = runParser program () "Error message" tokens
+parser tokens = runParser stmts () "Error message" tokens
 
 main :: IO ()
 main = case parser (getTokens "programaV0.pe") of
