@@ -26,17 +26,18 @@ assignToken = tokenPrim show update_pos get_token where
     get_token Assign = Just Assign
     get_token _      = Nothing
 
+
+-- ajustar essa função para que possa assinar pra todos os tipos
 intToken = tokenPrim show update_pos get_token where
   get_token (Int x) = Just (Int x)
-  get_token (String x) = Just (String x)
   get_token _       = Nothing
 
 update_pos :: SourcePos -> Token -> [Token] -> SourcePos
 update_pos pos _ (tok:_) = pos -- necessita melhoria (Não sei o que é isso.)
 update_pos pos _ []      = pos
 
-stmt :: Parsec [Token] st [Token]
-stmt = do
+program :: Parsec [Token] st [Token]
+program = do
         a <- beginToken 
         b <- stmts
         c <- endToken
@@ -64,10 +65,12 @@ remaining_stmts = (do a <- semicolonToken
 -- invocação do parser para o símbolo de partida 
 
 parser :: [Token] -> Either ParseError [Token]
-parser tokens = runParser stmts () "Error message" tokens
+parser tokens = runParser program () "Error message" tokens
 
 main :: IO ()
 main = case parser (getTokens "programaV0.pe") of
             { Left err -> print err; 
               Right ans -> print ans
             }
+
+-- Consertar o problema com o ;, só tá aceitando duas operações.
