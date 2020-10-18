@@ -2,9 +2,9 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "lexer.x" #-}
 
-  module Lexer where
-  import System.IO
-  import System.IO.Unsafe
+module Lexer where
+import System.IO
+import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__ >= 603
 #include "ghcconfig.h"
@@ -9762,23 +9762,24 @@ alex_actions = array (0 :: Int, 75)
 
 
 data Token =
-	  Op              AlexPosn Char	  |
-    Comma           AlexPosn Char   |
-	  Int             AlexPosn Int    |
-    Name            AlexPosn String |
-    String          AlexPosn String |
-    Number          AlexPosn String |
-    Boolean         AlexPosn String |
-    Float           AlexPosn Double |
-    Let                             |
-    Ghbc                            |
-    Assign                          |
-    PrimitiveType   AlexPosn String |
-    BlockBegin      AlexPosn Char	  |
-    BlockEnd        AlexPosn Char	  |
-    Keyword         AlexPosn String |
-    ComparativeOp   AlexPosn String |
-    LogicalOp       AlexPosn String 
+	  Op              Char	  |
+    Comma           Char    |
+	  Int             Int     |
+    Name            String  |
+    String          String  |
+    Number          String  |
+    Boolean         String  |
+    Float           Double  |
+    Let                     |
+    Ghbc                    |
+    Assign                  |
+    Semicolon               |
+    PrimitiveType   String  |
+    BlockBegin      Char	  |
+    BlockEnd        Char	  |
+    Keyword         String  |
+    ComparativeOp   String  |
+    LogicalOp       String 
 	deriving (Eq,Show)
 
 
@@ -9788,22 +9789,22 @@ getTokensAux fn = do {fh <- openFile fn ReadMode;
                       s <- hGetContents fh;
                       return (alexScanTokens s)}
 
-alex_action_2 =  \p   -> Let  
-alex_action_3 =  \p   -> Ghbc 
-alex_action_4 =  \p   -> Assign 
-alex_action_5 =  \p   -> Semicolon 
-alex_action_6 =  \p s -> BlockBegin p (head s) 
-alex_action_7 =  \p s -> BlockEnd p (head s) 
-alex_action_8 =  \p s -> ComparativeOp p s
-alex_action_9 =  \p s -> LogicalOp p s
-alex_action_10 =  \p s -> Op p (head s) 
-alex_action_11 =  \p s -> Int p (read s) 
-alex_action_12 =  \p s -> Float p (read s) 
-alex_action_13 =  \p s -> Boolean p s 
-alex_action_14 =  \p s -> PrimitiveType p s
-alex_action_15 =  \p s -> Keyword p s
-alex_action_16 =  \p s -> Comma p (head s)
-alex_action_17 =  \p s -> Name p s 
+alex_action_2 =  \p -> Let  
+alex_action_3 =  \p -> Ghbc 
+alex_action_4 =  \p -> Assign 
+alex_action_5 =  \p -> Semicolon 
+alex_action_6 =  \p -> BlockBegin (head p) 
+alex_action_7 =  \p -> BlockEnd (head p) 
+alex_action_8 =  \p -> ComparativeOp p
+alex_action_9 =  \p -> LogicalOp p
+alex_action_10 =  \p -> Op (head p) 
+alex_action_11 =  \p -> Int (read p) 
+alex_action_12 =  \p -> Float (read p) 
+alex_action_13 =  \p -> Boolean p 
+alex_action_14 =  \p -> PrimitiveType p
+alex_action_15 =  \p -> Keyword p
+alex_action_16 =  \p -> Comma (head p)
+alex_action_17 =  \p -> Name p 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}

@@ -1,7 +1,7 @@
 {
-  module Lexer where
-  import System.IO
-  import System.IO.Unsafe
+module Lexer where
+import System.IO
+import System.IO.Unsafe
 }
 
 %wrapper "basic"
@@ -17,43 +17,44 @@ tokens :-
 
   $white+                                                   ;
   "--".*                                                    ;
-  Let                                                       { \p   -> Let  } 
-  Ghbc                                                      { \p   -> Ghbc }
-  "="                                                       { \p   -> Assign }
-  ";"                                                       { \p   -> Semicolon }
-  $blockBegin                                               { \p s -> BlockBegin p (head s) } 
-  $blockEnd                                                 { \p s -> BlockEnd p (head s) } 
-  (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p s -> ComparativeOp p s}
-  (\&+\&|\|+\||\!)                                          { \p s -> LogicalOp p s}
-  $op                                                       { \p s -> Op p (head s) } 
-  $digit+                                                   { \p s -> Int p (read s) }
-  $digit+\.$digit+                                          { \p s -> Float p (read s) }
-  (true|false)                                              { \p s -> Boolean p s }
-  (int|float|string|array|boolean|matrix)                   { \p s -> PrimitiveType p s}
-  (if|else|for|continue|break|while|const|var)              { \p s -> Keyword p s}
-  $comma                                                    { \p s -> Comma p (head s)}        
-  $alpha+                                                   { \p s -> Name p s }
+  "Let"                                                     { \p -> Let  } 
+  "Ghbc"                                                    { \p -> Ghbc }
+  "="                                                       { \p -> Assign }
+  ";"                                                       { \p -> Semicolon }
+  $blockBegin                                               { \p -> BlockBegin (head p) } 
+  $blockEnd                                                 { \p -> BlockEnd (head p) } 
+  (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p -> ComparativeOp p}
+  (\&+\&|\|+\||\!)                                          { \p -> LogicalOp p}
+  $op                                                       { \p -> Op (head p) } 
+  $digit+                                                   { \p -> Int (read p) }
+  $digit+\.$digit+                                          { \p -> Float (read p) }
+  (true|false)                                              { \p -> Boolean p }
+  (int|float|string|array|boolean|matrix)                   { \p -> PrimitiveType p}
+  (if|else|for|continue|break|while|const|var)              { \p -> Keyword p}
+  $comma                                                    { \p -> Comma (head p)}        
+  $alpha+                                                   { \p -> Name p }
 
 {
 
 data Token =
-	  Op              AlexPosn Char	  |
-    Comma           AlexPosn Char   |
-	  Int             AlexPosn Int    |
-    Name            AlexPosn String |
-    String          AlexPosn String |
-    Number          AlexPosn String |
-    Boolean         AlexPosn String |
-    Float           AlexPosn Double |
-    Let                             |
-    Ghbc                            |
-    Assign                          |
-    PrimitiveType   AlexPosn String |
-    BlockBegin      AlexPosn Char	  |
-    BlockEnd        AlexPosn Char	  |
-    Keyword         AlexPosn String |
-    ComparativeOp   AlexPosn String |
-    LogicalOp       AlexPosn String 
+	  Op              Char	  |
+    Comma           Char    |
+	  Int             Int     |
+    Name            String  |
+    String          String  |
+    Number          String  |
+    Boolean         String  |
+    Float           Double  |
+    Let                     |
+    Ghbc                    |
+    Assign                  |
+    Semicolon               |
+    PrimitiveType   String  |
+    BlockBegin      Char	  |
+    BlockEnd        Char	  |
+    Keyword         String  |
+    ComparativeOp   String  |
+    LogicalOp       String 
 	deriving (Eq,Show)
 
 
