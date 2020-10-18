@@ -1,4 +1,4 @@
-Let 
-   x = 1;
-   y = 2
+Let primeiroPrograma
+   int x = 1.0;
+   int y = 2
 Ghbc

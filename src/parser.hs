@@ -14,35 +14,45 @@ endToken = tokenPrim show update_pos get_token where
     get_token _    = Nothing
 
 idToken = tokenPrim show update_pos get_token where
-  get_token (Name x) = Just (Name x)
-  get_token _      = Nothing
+    get_token (Name x) = Just (Name x)
+    get_token _      = Nothing
 
+-- language types
+floatToken = tokenPrim show update_pos get_token where
+  get_token (Float x) = Just (Float x)
+  get_token _       = Nothing 
+
+intToken = tokenPrim show update_pos get_token where
+  get_token (Int x) = Just (Int x)
+  get_token _       = Nothing
+
+-- general statements programing
+update_pos :: SourcePos -> Token -> [Token] -> SourcePos
+update_pos pos _ (tok:_) = pos -- necessita melhoria
+update_pos pos _ []      = pos
+
+-- general tokens
 semicolonToken :: Parsec [Token] st Token
 semicolonToken = tokenPrim show update_pos get_token where
-  get_token Semicolon = Just Semicolon
-  get_token _         = Nothing
+    get_token Semicolon = Just Semicolon
+    get_token _         = Nothing
 
 assignToken = tokenPrim show update_pos get_token where
     get_token Assign = Just Assign
     get_token _      = Nothing
 
-
--- ajustar essa função para que possa assinar pra todos os tipos
-intToken = tokenPrim show update_pos get_token where
-  get_token (Int x) = Just (Int x)
-  get_token _       = Nothing
-
-update_pos :: SourcePos -> Token -> [Token] -> SourcePos
-update_pos pos _ (tok:_) = pos -- necessita melhoria (Não sei o que é isso.)
-update_pos pos _ []      = pos
+primitiveTypeToken = tokenPrim show update_pos get_token where
+    get_token (PrimitiveType x) = Just (PrimitiveType x)
+    get_token _      = Nothing
 
 program :: Parsec [Token] st [Token]
 program = do
         a <- beginToken 
-        b <- stmts
-        c <- endToken
+        b <- idToken -- nome do programa
+        c <- stmts
+        d <- endToken
         eof
-        return ([a] ++ b ++ [c])  -- Como o programa é estruturado: 'a' e 'c' início e fim dos códigos, 'd' os statements
+        return ([a] ++ [b] ++ c ++ [d])  -- Como o programa é estruturado: 'a' e 'c' início e fim dos códigos, 'd' os statements
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
@@ -52,10 +62,11 @@ stmts = do
 
 assign :: Parsec [Token] st [Token]
 assign = do
-          a <- idToken
-          b <- assignToken
-          c <- intToken
-          return (a:b:[c])
+          a <- primitiveTypeToken
+          b <- idToken
+          c <- assignToken
+          d <- (intToken <|> floatToken)
+          return (b:c:[d])
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
@@ -63,7 +74,6 @@ remaining_stmts = (do a <- semicolonToken
                       return (a:b)) <|> (return [])
 
 -- invocação do parser para o símbolo de partida 
-
 parser :: [Token] -> Either ParseError [Token]
 parser tokens = runParser program () "Error message" tokens
 
