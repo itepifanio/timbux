@@ -96,10 +96,6 @@ assign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-        --   d <- (intToken <|> floatToken)
-        --   return (b:c:[d])
-          -- d <- array
-          -- return (b:c:d)
           d <- (intToken <|> floatToken <|> array)
           return (b:c:d)
           
