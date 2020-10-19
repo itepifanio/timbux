@@ -2,5 +2,7 @@ Let primeiroPrograma
    int x = 1;
    if ( x < 3 ) {
       int x = 3 -- bug semicolo. Necessario criar estrutura assign sem o tipo aqui
-   }
+   };
+   float y = 2.2;
+   int z = 10;
 Ghbc

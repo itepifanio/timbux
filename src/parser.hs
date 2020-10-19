@@ -10,20 +10,25 @@ program = do
         a <- beginToken 
         b <- idToken -- nome do programa
         c <- stmts
-        d <- endToken
         eof
-        return ([a] ++ [b] ++ c ++ [d])
+        return ([a] ++ [b] ++ c)
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
-          first <- assign
+          first <- assign <|> ifStatement
           next  <- remaining_stmts
-          return (first ++ next)
+          return (first ++ next) <|> (return [])
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
-                      b <- assign <|> ifStatement
+                      b <- stmts <|> endProgram
                       return (a:b)) <|> (return [])
+
+endProgram :: Parsec [Token] st [Token]
+endProgram = do
+           a <- endToken
+           eof
+           return ([a]) 
 
 parser :: [Token] -> Either ParseError [Token]
 parser tokens = runParser program () "Error message" tokens
