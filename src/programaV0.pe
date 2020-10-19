@@ -1,4 +1,6 @@
 Let primeiroPrograma
-   int x = 1.0;
-   int y = 2
+   int x = 1;
+   if ( x < 3 ) {
+      int x = 3 -- bug semicolo. Necessario criar estrutura assign sem o tipo aqui
+   }
 Ghbc

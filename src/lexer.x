@@ -13,26 +13,27 @@ $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
 $comma = [\,\"\']
+
 tokens :-
 
-  $white+                                                   ;
-  "--".*                                                    ;
-  "Let"                                                     { \p -> Let  } 
-  "Ghbc"                                                    { \p -> Ghbc }
-  "="                                                       { \p -> Assign }
-  ";"                                                       { \p -> Semicolon }
-  $blockBegin                                               { \p -> BlockBegin (head p) } 
-  $blockEnd                                                 { \p -> BlockEnd (head p) } 
-  (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p -> ComparativeOp p}
-  (\&+\&|\|+\||\!)                                          { \p -> LogicalOp p}
-  $op                                                       { \p -> Op (head p) } 
-  $digit+                                                   { \p -> Int (read p) }
-  $digit+\.$digit+                                          { \p -> Float (read p) }
-  (true|false)                                              { \p -> Boolean p }
-  (int|float|string|array|boolean|matrix)                   { \p -> PrimitiveType p}
-  (if|else|for|continue|break|while|const|var)              { \p -> Keyword p}
-  $comma                                                    { \p -> Comma (head p)}        
-  $alpha+                                                   { \p -> Name p }
+  $white+                                      ;
+  "--".*                                       ;
+  "Let"                                        { \p -> Let  } 
+  "Ghbc"                                       { \p -> Ghbc }
+  "="                                          { \p -> Assign }
+  ";"                                          { \p -> Semicolon }
+  $blockBegin                                  { \p -> BlockBegin (head p) } 
+  $blockEnd                                    { \p -> BlockEnd (head p) } 
+  (\=+\=|\>+\=|\<+\=|\>|\<)                    { \p -> ComparativeOp p}
+  (\&+\&|\|+\||\!)                             { \p -> LogicalOp p}
+  $op                                          { \p -> Op (head p) } 
+  $digit+                                      { \p -> Int (read p) }
+  $digit+\.$digit+                             { \p -> Float (read p) }
+  (true|false)                                 { \p -> Boolean p }
+  (int|float|string|array|boolean|matrix)      { \p -> PrimitiveType p}
+  (if|else|for|continue|break|while|const|var) { \p -> Keyword p}
+  $comma                                       { \p -> Comma (head p)}        
+  $alpha+                                      { \p -> Name p }
 
 {
 
@@ -41,7 +42,6 @@ data Token =
     Comma           Char    |
 	  Int             Int     |
     Name            String  |
-    String          String  |
     Number          String  |
     Boolean         String  |
     Float           Double  |
@@ -54,9 +54,9 @@ data Token =
     BlockEnd        Char	  |
     Keyword         String  |
     ComparativeOp   String  |
+    String          String  |
     LogicalOp       String 
 	deriving (Eq,Show)
-
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
 

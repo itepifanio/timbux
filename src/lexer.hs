@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds -fno-warn-missing-signatures #-}
 {-# LANGUAGE CPP #-}
-{-# LINE 1 "lexer.x" #-}
+{-# LINE 1 "./lexer.x" #-}
 
 module Lexer where
 import System.IO
@@ -9758,7 +9758,7 @@ alex_actions = array (0 :: Int, 75)
   , (0,alex_action_17)
   ]
 
-{-# LINE 37 "lexer.x" #-}
+{-# LINE 38 "./lexer.x" #-}
 
 
 data Token =
@@ -9766,7 +9766,6 @@ data Token =
     Comma           Char    |
 	  Int             Int     |
     Name            String  |
-    String          String  |
     Number          String  |
     Boolean         String  |
     Float           Double  |
@@ -9779,9 +9778,9 @@ data Token =
     BlockEnd        Char	  |
     Keyword         String  |
     ComparativeOp   String  |
+    String          String  |
     LogicalOp       String 
 	deriving (Eq,Show)
-
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
 
