@@ -21,6 +21,8 @@ tokens :-
   "Ghbc"                                                    { \p -> Ghbc }
   "="                                                       { \p -> Assign }
   ";"                                                       { \p -> Semicolon }
+  "["                                                       { \p -> OpenBrackets }
+  "]"                                                       { \p -> ClosedBrackets } 
   $blockBegin                                               { \p -> BlockBegin (head p) } 
   $blockEnd                                                 { \p -> BlockEnd (head p) } 
   (\=+\=|\>+\=|\<+\=|\>|\<)                                 { \p -> ComparativeOp p}
@@ -31,24 +33,27 @@ tokens :-
   (true|false)                                              { \p -> Boolean p }
   (int|float|string|array|boolean|matrix)                   { \p -> PrimitiveType p}
   (if|else|for|continue|break|while|const|var)              { \p -> Keyword p}
-  $comma                                                    { \p -> Comma (head p)}        
+  ","                                                       { \p -> Comma}        
   $alpha+                                                   { \p -> Name p }
 
 {
 
 data Token =
 	  Op              Char	  |
-    Comma           Char    |
+    Comma                   |
 	  Int             Int     |
     Name            String  |
     String          String  |
     Number          String  |
     Boolean         String  |
     Float           Double  |
+    Array                   |
     Let                     |
     Ghbc                    |
     Assign                  |
     Semicolon               |
+    OpenBrackets            |
+    ClosedBrackets          |
     PrimitiveType   String  |
     BlockBegin      Char	  |
     BlockEnd        Char	  |

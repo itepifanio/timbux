@@ -37,6 +37,21 @@ semicolonToken = tokenPrim show update_pos get_token where
     get_token Semicolon = Just Semicolon
     get_token _         = Nothing
 
+commaToken :: Parsec [Token] st Token
+commaToken = tokenPrim show update_pos get_token where
+    get_token Comma = Just Comma
+    get_token _         = Nothing
+
+openBracketsToken :: Parsec [Token] st Token
+openBracketsToken = tokenPrim show update_pos get_token where
+    get_token OpenBrackets = Just OpenBrackets
+    get_token _    = Nothing
+
+closedBracketsToken :: Parsec [Token] st Token
+closedBracketsToken = tokenPrim show update_pos get_token where
+    get_token ClosedBrackets = Just ClosedBrackets
+    get_token _    = Nothing
+
 assignToken = tokenPrim show update_pos get_token where
     get_token Assign = Just Assign
     get_token _      = Nothing
@@ -59,19 +74,38 @@ stmts = do
           first <- assign
           next <- remaining_stmts
           return (first ++ next)
+digitSequence::Parsec [Token] st [Token]
+digitSequence = do
+        first <- (intToken <|> floatToken)
+        next <- remaining_digits
+        return([first]++next)
+
+array :: Parsec [Token] st [Token]
+array = do
+          open <- openBracketsToken
+          values <- digitSequence
+          close <- closedBracketsToken
+          return (values)
 
 assign :: Parsec [Token] st [Token]
 assign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- (intToken <|> floatToken)
-          return (b:c:[d])
+          d <- array
+          return (b:c:d)
+        --   d <- (intToken <|> (floatToken <|> array))
+        --   return (b:c:[d])
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
                       b <- assign
                       return (a:b)) <|> (return [])
+remaining_digits :: Parsec [Token] st [Token]
+remaining_digits = (do 
+                    a <- commaToken
+                    b <- (intToken <|> floatToken)
+                    return (a:[b])) <|> (return [])
 
 -- invocação do parser para o símbolo de partida 
 parser :: [Token] -> Either ParseError [Token]
