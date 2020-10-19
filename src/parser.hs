@@ -2,6 +2,7 @@ module Main (main) where
 
 import Lexer
 import Text.Parsec
+import Data.Functor.Identity
 
 -- o programa inicializa com o "let"
 beginToken = tokenPrim show update_pos get_token where
@@ -18,12 +19,14 @@ idToken = tokenPrim show update_pos get_token where
     get_token _      = Nothing
 
 -- language types
+floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity [Token]
 floatToken = tokenPrim show update_pos get_token where
-  get_token (Float x) = Just (Float x)
+  get_token (Float x) = Just ([Float x])
   get_token _       = Nothing 
 
+intToken :: ParsecT [Token] st Data.Functor.Identity.Identity [Token]
 intToken = tokenPrim show update_pos get_token where
-  get_token (Int x) = Just (Int x)
+  get_token (Int x) = Just ([Int x])
   get_token _       = Nothing
 
 -- general statements programing
@@ -79,7 +82,7 @@ digitSequence::Parsec [Token] st [Token]
 digitSequence = do
         first <- (intToken <|> floatToken)
         next <- remaining_digits
-        return([first]++next)
+        return(first++next)
 
 array :: Parsec [Token] st [Token]
 array = do
@@ -93,9 +96,13 @@ assign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- array
-        --   d <- ((intToken <|> floatToken) <|> array)
+        --   d <- (intToken <|> floatToken)
+        --   return (b:c:[d])
+          -- d <- array
+          -- return (b:c:d)
+          d <- (intToken <|> floatToken <|> array)
           return (b:c:d)
+          
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
