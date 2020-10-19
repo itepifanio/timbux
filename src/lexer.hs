@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 1 "lexer.x" #-}
 
-module Lexer( Token (..) ) where
+module Lexer where
 import System.IO
 import System.IO.Unsafe
 
@@ -9758,7 +9758,7 @@ alex_actions = array (0 :: Int, 75)
   , (0,alex_action_17)
   ]
 
-{-# LINE 37 "lexer.x" #-}
+{-# LINE 38 "lexer.x" #-}
 
 
 data Token =
@@ -9778,7 +9778,7 @@ data Token =
     BlockEnd        Char	  |
     Keyword         String  |
     ComparativeOp   String  |
-    String          Char String Char |
+    String          String  |
     LogicalOp       String 
 	deriving (Eq,Show)
 

@@ -1,4 +1,4 @@
 Let primeiroPrograma
-   int x = "Hue";
+   int x = 1;
    int y = 2
 Ghbc

@@ -1,5 +1,5 @@
 {
-module Lexer( Token (..) ) where
+module Lexer where
 import System.IO
 import System.IO.Unsafe
 }
@@ -13,6 +13,7 @@ $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
 $comma = [\,\"\']
+
 tokens :-
 
   $white+                                      ;
@@ -53,7 +54,7 @@ data Token =
     BlockEnd        Char	  |
     Keyword         String  |
     ComparativeOp   String  |
-    String          Char String Char |
+    String          String  |
     LogicalOp       String 
 	deriving (Eq,Show)
 
