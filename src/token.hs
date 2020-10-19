@@ -12,7 +12,7 @@ update_pos pos _ []      = pos
 idToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 idToken = tokenPrim show update_pos get_token where
     get_token (Name x) = Just (Name x)
-    get_token _      = Nothing
+    get_token _        = Nothing
 
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
@@ -28,23 +28,43 @@ intToken = tokenPrim show update_pos get_token where
 booleanToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
-    get_token _         = Nothing
+    get_token _           = Nothing
 
 -- general statements
 commaToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 commaToken = tokenPrim show update_pos get_token where
     get_token (Comma x) = Just (Comma x)
-    get_token _       = Nothing
+    get_token _         = Nothing
+
+keywordToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+keywordToken = tokenPrim show update_pos get_token where
+    get_token (Keyword x) = Just (Keyword x)
+    get_token _         = Nothing
+
+blockBeginToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+blockBeginToken = tokenPrim show update_pos get_token where
+    get_token (BlockBegin x) = Just (BlockBegin x)
+    get_token _         = Nothing    
+
+blockEndToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+blockEndToken = tokenPrim show update_pos get_token where
+    get_token (BlockEnd x) = Just (BlockEnd x)
+    get_token _         = Nothing
 
 assignToken :: Parsec [Token] st Token
 assignToken = tokenPrim show update_pos get_token where
     get_token Assign = Just Assign
     get_token _      = Nothing
 
+comparativeOpToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+comparativeOpToken = tokenPrim show update_pos get_token where
+    get_token (ComparativeOp x) = Just (ComparativeOp x)
+    get_token _                 = Nothing
+
 primitiveTypeToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 primitiveTypeToken = tokenPrim show update_pos get_token where
     get_token (PrimitiveType x) = Just (PrimitiveType x)
-    get_token _      = Nothing
+    get_token _                 = Nothing
 
 semicolonToken :: Parsec [Token] st Token
 semicolonToken = tokenPrim show update_pos get_token where
@@ -62,3 +82,26 @@ endToken :: Parsec [Token] st Token
 endToken = tokenPrim show update_pos get_token where
     get_token Ghbc = Just Ghbc
     get_token _    = Nothing
+
+-- statements
+
+ifStatement :: Parsec [Token] st [Token]
+ifStatement = do
+    a <- keywordToken
+    b <- blockBeginToken <?> "("
+    c <- idToken <|> floatToken <|> intToken
+    d <- comparativeOpToken
+    e <- idToken <|> floatToken <|> intToken
+    f <- blockEndToken   <?> ")"
+    g <- blockBeginToken <?> "{"
+    h <- assign -- adicionar as outras estruturas posteriormente
+    i <- blockEndToken   <?> "}"
+    return (a:b:c:d:e:f:g:h ++ [i])
+
+assign :: Parsec [Token] st [Token]
+assign = do
+          a <- primitiveTypeToken
+          b <- idToken
+          c <- assignToken
+          d <- (intToken <|> floatToken <|> booleanToken)
+          return (a:b:c:[d])

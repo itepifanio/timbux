@@ -17,20 +17,12 @@ program = do
 stmts :: Parsec [Token] st [Token]
 stmts = do
           first <- assign
-          next <- remaining_stmts
+          next  <- remaining_stmts
           return (first ++ next)
-
-assign :: Parsec [Token] st [Token]
-assign = do
-          a <- primitiveTypeToken
-          b <- idToken
-          c <- assignToken
-          d <- (intToken <|> floatToken <|> booleanToken)
-          return (b:c:[d])
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
-                      b <- assign
+                      b <- assign <|> ifStatement
                       return (a:b)) <|> (return [])
 
 parser :: [Token] -> Either ParseError [Token]
