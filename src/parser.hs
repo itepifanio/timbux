@@ -74,6 +74,7 @@ stmts = do
           first <- assign
           next <- remaining_stmts
           return (first ++ next)
+          
 digitSequence::Parsec [Token] st [Token]
 digitSequence = do
         first <- (intToken <|> floatToken)
@@ -93,19 +94,17 @@ assign = do
           b <- idToken
           c <- assignToken
           d <- array
+        --   d <- ((intToken <|> floatToken) <|> array)
           return (b:c:d)
-        --   d <- (intToken <|> (floatToken <|> array))
-        --   return (b:c:[d])
 
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
                       b <- assign
                       return (a:b)) <|> (return [])
 remaining_digits :: Parsec [Token] st [Token]
-remaining_digits = (do 
-                    a <- commaToken
-                    b <- (intToken <|> floatToken)
-                    return (a:[b])) <|> (return [])
+remaining_digits = (do a <- commaToken
+                       b <- digitSequence
+                       return (a:b)) <|> (return [])
 
 -- invocação do parser para o símbolo de partida 
 parser :: [Token] -> Either ParseError [Token]
