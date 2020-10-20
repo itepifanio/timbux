@@ -1,9 +1,6 @@
 Let primeiroPrograma
-   int x = 1;
-   if ( x < 3 ) {
-      int x = 3;
-   }else{
-      int a = 2;
+   int x = 2;
+   if(2<3){
+      int y = 3;
    }
-   
 Ghbc

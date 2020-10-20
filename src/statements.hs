@@ -24,14 +24,12 @@ generalStatement :: String -> Parsec [Token] st [Token]
 generalStatement stmt = do
     a <- keywordToken <?> stmt
     b <- blockBeginToken <?> "("
-    c <- idToken <|> floatToken <|> intToken
-    d <- comparativeOpToken
-    e <- idToken <|> floatToken <|> intToken
+    c <- logicStatement
     f <- blockEndToken   <?> ")"
     g <- blockBeginToken <?> "{"
     h <- stmts
     i <- blockEndToken   <?> "}"
-    return (a:b:c:d:e:f:g:h ++ [i])
+    return (a:b:c++f:g:[]++h++i:[])
 
 {-elseStatement :: Parsec [Token] st [Token]
 elseStatement = do
@@ -62,7 +60,7 @@ ifElseStatement = do
     k <- blockBeginToken <?> "{"
     l <- stmts
     m <- blockEndToken   <?> "}"
-    return (a:b:c:d:e:f:g:h++[i]++(i:j:k:l++[m] ))
+    return (a:b:c:d:e:f:g:h++[i]++(i:j:k:l++[m]))
 
 
 
@@ -88,13 +86,13 @@ ifElseStatement = do
 --     r <- blockEndToken   <?> "}"
 --     return (a:b:c:d:e:f:g:h:i:j:k:l:m:n:o:p:q ++ [r])
 
--- Pq isso n rola?
--- logicStatement :: Parsec [Token] st [Token]
--- logicStatement = do
---     a <- idToken <|> floatToken <|> intToken
---     b <- comparativeOpToken
---     c <- idToken <|> floatToken <|> intToken
---     return (a:b:[c])
+
+logicStatement :: Parsec [Token] st [Token]
+logicStatement = do
+            a <- idToken <|> floatToken <|> intToken
+            b <- comparativeOpToken
+            c <- idToken <|> floatToken <|> intToken
+            return(a:b:[c])
 
 -- forStatement :: Parsec [Token] st [Token]
 -- forStatement = do
