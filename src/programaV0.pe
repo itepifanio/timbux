@@ -1,5 +1,3 @@
 Let primeiroPrograma
-   if(a>b){
-      int c = 3;
-   }
+   int c = -3;
 Ghbc
