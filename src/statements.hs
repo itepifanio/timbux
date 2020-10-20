@@ -31,7 +31,17 @@ generalStatement stmt = do
     g <- blockBeginToken <?> "{"
     h <- stmts
     i <- blockEndToken   <?> "}"
-    return (a:b:c:d:e:f:g:h ++ [i])
+    j <- elseStatement
+    return (a:b:c:d:e:f:g:h ++ [i]++j)
+
+
+elseStatement :: Parsec [Token] st [Token]
+elseStatement = do
+    a <- keywordToken
+    b <- blockBeginToken <?> "{"
+    c <- stmts -- adicionar as outras estruturas posteriormente
+    d <- blockEndToken   <?> "}"
+    return (a:b:c ++ [d]) <|> (return [])
 
 whileStatement :: Parsec [Token] st [Token]
 whileStatement = generalStatement "while"

@@ -4,19 +4,4 @@ Let primeiroPrograma
       int x = 3;
    }
    
-   while( y < x ) {
-      float y = 4;
-   }
-
-   -- for ( float i = 0 ; i < 10; i += 1) {
-   --   int x = 1;
-   -- }
-
-   float y = 2.2;
-   int z = 10;
-   array a = [1, 2, 4];
-   array b = [3, 22, 43];
-   array a = [[1,2,3], [2,3,4]];
-   int i = 2;
-   
 Ghbc
