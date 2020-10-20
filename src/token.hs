@@ -19,11 +19,20 @@ digitSequence = do
         first <- (intToken <|> floatToken)
         next <- remaining_digits
         return([first]++next)
+arraySequence::Parsec [Token] st [Token]
+arraySequence = do
+        first <- array
+        next <- remaining_arrays
+        return(first++next)
+
 remaining_digits :: Parsec [Token] st [Token]
 remaining_digits = (do a <- commaToken <?> ","
                        b <- digitSequence
                        return (a:b)) <|> (return [])
-
+remaining_arrays :: Parsec [Token] st [Token]
+remaining_arrays = (do a <- commaToken <?> ","
+                       b <- arraySequence
+                       return (a:b)) <|> (return [])
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 floatToken = tokenPrim show update_pos get_token where
@@ -35,6 +44,7 @@ intToken = tokenPrim show update_pos get_token where
     get_token (Int x) = Just (Int x)
     get_token _       = Nothing
 
+
 booleanToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
@@ -43,11 +53,9 @@ booleanToken = tokenPrim show update_pos get_token where
 array :: Parsec [Token] st [Token]
 array = do
           open <- blockBeginToken <?> "["
-          values <- digitSequence
+          values <- digitSequence <|> arraySequence
           close <- blockEndToken <?> "]"
-          return (values)
-
--- general statements
+          return (open:values++[close])
 
 commaToken :: Parsec [Token] st Token
 commaToken = tokenPrim show update_pos get_token where

@@ -93,6 +93,6 @@ assign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- singletonToken <|> array
+          d <- singletonToken <|> array 
           e <- semicolonToken
           return (a:b:c:d ++ [e])

@@ -46,6 +46,7 @@ data Token =
     Boolean         String  |
     Float           Double  |
     Array                   |
+    Matrix                  |
     Let                     |
     Ghbc                    |
     Assign                  |
