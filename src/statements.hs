@@ -23,14 +23,14 @@ endProgram = do
 generalStatement :: String -> Parsec [Token] st [Token]
 generalStatement stmt = do
     a <- keywordToken stmt
-    b <- blockBeginToken <?> "("
+    b <- blockBeginToken "("
     c <- idToken <|> floatToken <|> intToken
     d <- comparativeOpToken
     e <- idToken <|> floatToken <|> intToken
-    f <- blockEndToken   <?> ")"
-    g <- blockBeginToken <?> "{"
+    f <- blockEndToken    ")"
+    g <- blockBeginToken "{"
     h <- stmts
-    i <- blockEndToken   <?> "}"
+    i <- blockEndToken   "}"
     return (a:b:c:d:e:f:g:h ++ [i])
 
 whileStatement :: Parsec [Token] st [Token]
@@ -39,29 +39,6 @@ whileStatement = generalStatement "while"
 ifStatement :: Parsec [Token] st [Token]
 ifStatement = generalStatement "if"
 
--- forStatement :: Parsec [Token] st [Token]
--- forStatement = do
---     a <- keywordToken <?> "for"
---     b <- blockBeginToken <?> "("
---     c <- primitiveTypeToken
---     d <- idToken
---     e <- assignToken
---     f <- (intToken <|> floatToken <|> booleanToken)
---     g <- semicolonToken
---     h <- idToken <|> floatToken <|> intToken
---     i <- comparativeOpToken
---     j <- idToken <|> floatToken <|> intToken 
---     k <- semicolonToken
---     l <- idToken <|> floatToken <|> intToken
---     m <- comparativeOpToken
---     n <- idToken <|> floatToken <|> intToken 
---     o <- blockEndToken   <?> ")"
---     p <- blockBeginToken <?> "{"
---     q <- stmts
---     r <- blockEndToken   <?> "}"
---     return (a:b:c:d:e:f:g:h:i:j:k:l:m:n:o:p:q ++ [r])
-
--- Pq isso n rola?
 logicStatement :: Parsec [Token] st [Token]
 logicStatement = do
     a <- idToken <|> floatToken <|> intToken
@@ -72,15 +49,15 @@ logicStatement = do
 forStatement :: Parsec [Token] st [Token]
 forStatement = do
     a <- keywordToken "for"
-    b <- blockBeginToken <?> "("
+    b <- blockBeginToken "("
     c <- assign
     d <- logicStatement
     e <- semicolonToken
     f <- logicStatement
-    l <- blockEndToken   <?> ")"
-    m <- blockBeginToken <?> "{"
+    l <- blockEndToken  ")"
+    m <- blockBeginToken "{"
     n <- stmts
-    o <- blockEndToken   <?> "}"
+    o <- blockEndToken  "}"
     return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m:n ++ [o]))
 
 singletonToken:: Parsec [Token] st [Token]
