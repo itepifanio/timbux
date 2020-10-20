@@ -1,5 +1,6 @@
 Let primeiroPrograma
-   int y = [1, 3];
-   int x = [2, 4]
+   array a = [1, 2, 4];
+   array b = [3, 22, 43];
+   int i = 2;
    
 Ghbc
