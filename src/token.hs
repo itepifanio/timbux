@@ -44,11 +44,6 @@ intToken = tokenPrim show update_pos get_token where
     get_token (Int x) = Just (Int x)
     get_token _       = Nothing
 
--- matrixToken :: Parsec [Token] st Token
--- matrixToken = tokenPrim show update_pos get_token where
---     get_token Matrix = Just Matrix
---     get_token _       = Nothing
-
 
 booleanToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 booleanToken = tokenPrim show update_pos get_token where
@@ -61,15 +56,6 @@ array = do
           values <- digitSequence <|> arraySequence
           close <- blockEndToken <?> "]"
           return (open:values++[close])
-
--- matrix :: Parsec [Token] st [Token]
--- matrix = do 
---            a <- matrixToken
---            open <- blockBeginToken <?> "["
---            values <- arraySequence
---            close <- blockEndToken <?> "]"
---            return (values)
--- general statements
 
 commaToken :: Parsec [Token] st Token
 commaToken = tokenPrim show update_pos get_token where
