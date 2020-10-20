@@ -14,6 +14,12 @@ program = do
         eof
         return ([a] ++ [b] ++ c)
 
+endProgram :: Parsec [Token] st [Token]
+endProgram = do
+           a <- endToken
+           eof
+           return ([a]) 
+
 parser :: [Token] -> Either ParseError [Token]
 parser tokens = runParser program () "Error message" tokens
 

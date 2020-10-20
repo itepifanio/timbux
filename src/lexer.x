@@ -45,10 +45,13 @@ data Token =
     Number          String  |
     Boolean         String  |
     Float           Double  |
+    Array                   |
     Let                     |
     Ghbc                    |
     Assign                  |
     Semicolon               |
+    OpenBrackets            |
+    ClosedBrackets          |
     PrimitiveType   String  |
     BlockBegin      Char	  |
     BlockEnd        Char	  |
