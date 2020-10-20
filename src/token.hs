@@ -60,7 +60,7 @@ array = do
           open <- blockBeginToken <?> "["
           values <- digitSequence <|> arraySequence
           close <- blockEndToken <?> "]"
-          return (values)
+          return (open:values++[close])
 
 -- matrix :: Parsec [Token] st [Token]
 -- matrix = do 
