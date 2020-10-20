@@ -31,23 +31,40 @@ generalStatement stmt = do
     g <- blockBeginToken <?> "{"
     h <- stmts
     i <- blockEndToken   <?> "}"
-    j <- elseStatement
-    return (a:b:c:d:e:f:g:h ++ [i]++j)
+    return (a:b:c:d:e:f:g:h ++ [i])
 
-
-elseStatement :: Parsec [Token] st [Token]
+{-elseStatement :: Parsec [Token] st [Token]
 elseStatement = do
     a <- keywordToken
     b <- blockBeginToken <?> "{"
-    c <- stmts -- adicionar as outras estruturas posteriormente
+    c <- stmts
     d <- blockEndToken   <?> "}"
-    return (a:b:c ++ [d]) <|> (return [])
+    return (a:b:c ++ [d])-}
 
 whileStatement :: Parsec [Token] st [Token]
 whileStatement = generalStatement "while"
 
 ifStatement :: Parsec [Token] st [Token]
 ifStatement = generalStatement "if"
+
+ifElseStatement :: Parsec [Token] st [Token]
+ifElseStatement = do
+    a <- keywordToken <?> "if"
+    b <- blockBeginToken <?> "("
+    c <- idToken <|> floatToken <|> intToken
+    d <- comparativeOpToken
+    e <- idToken <|> floatToken <|> intToken
+    f <- blockEndToken   <?> ")"
+    g <- blockBeginToken <?> "{"
+    h <- stmts
+    i <- blockEndToken   <?> "}"
+    j <- keywordToken <?> "else"
+    k <- blockBeginToken <?> "{"
+    l <- stmts
+    m <- blockEndToken   <?> "}"
+    return (a:b:c:d:e:f:g:h++[i]++(i:j:k:l++[m] ))
+
+
 
 -- forStatement :: Parsec [Token] st [Token]
 -- forStatement = do
