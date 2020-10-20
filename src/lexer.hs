@@ -537,13 +537,13 @@ alex_base = listArray (0 :: Int, 91)
   , 0
   , 0
   , 0
-  , -35
   , -33
-  , -22
+  , -23
+  , -5
   , 0
   , 0
   , -101
-  , -7
+  , -9
   , 5
   , 0
   , 704
@@ -636,20 +636,20 @@ alex_table = listArray (0 :: Int, 4491)
   , 28
   , 15
   , 27
-  , 23
+  , 37
   , 31
-  , 26
-  , 1
-  , 11
+  , 23
   , 29
+  , 11
+  , 37
   , 21
   , 22
   , 31
   , 31
   , 37
   , 30
-  , 2
   , 26
+  , 1
   , 32
   , 32
   , 32
@@ -665,8 +665,8 @@ alex_table = listArray (0 :: Int, 4491)
   , 25
   , 19
   , 24
-  , 0
-  , 0
+  , 2
+  , 26
   , 66
   , 66
   , 66
@@ -5132,20 +5132,20 @@ alex_check = listArray (0 :: Int, 4491)
   , 124
   , 32
   , 33
-  , 61
+  , 34
   , 35
   , 61
-  , 62
   , 38
   , 38
+  , 39
   , 40
   , 41
   , 42
   , 43
   , 44
   , 45
-  , 60
   , 61
+  , 62
   , 48
   , 49
   , 50
@@ -5161,8 +5161,8 @@ alex_check = listArray (0 :: Int, 4491)
   , 60
   , 61
   , 62
-  , -1
-  , -1
+  , 60
+  , 61
   , 65
   , 66
   , 67
@@ -9874,7 +9874,7 @@ alex_actions = array (0 :: Int, 75)
 
 data Token =
 	  Op              Char	  |
-    Comma                   |
+    Comma           Char    |
 	  Int             Int     |
     Name            String  |
     Number          String  |
@@ -9916,7 +9916,7 @@ alex_action_12 =  \p -> Float (read p)
 alex_action_13 =  \p -> Boolean p 
 alex_action_14 =  \p -> PrimitiveType p
 alex_action_15 =  \p -> Keyword p
-alex_action_16 =  \p -> Comma
+alex_action_16 =  \p -> Comma (head p)
 alex_action_17 =  \p -> Name p 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 -- -----------------------------------------------------------------------------

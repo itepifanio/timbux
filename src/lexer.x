@@ -32,14 +32,14 @@ tokens :-
   (true|false)                                 { \p -> Boolean p }
   (int|float|string|array|boolean|matrix)      { \p -> PrimitiveType p}
   (if|else|for|continue|break|while|const|var) { \p -> Keyword p}
-  ","                                       { \p -> Comma}        
+  $comma                                       { \p -> Comma (head p)}        
   $alpha+                                      { \p -> Name p }
 
 {
 
 data Token =
 	  Op              Char	  |
-    Comma                   |
+    Comma           Char    |
 	  Int             Int     |
     Name            String  |
     Number          String  |

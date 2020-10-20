@@ -20,7 +20,7 @@ digitSequence = do
         next <- remaining_digits
         return([first]++next)
 remaining_digits :: Parsec [Token] st [Token]
-remaining_digits = (do a <- commaToken
+remaining_digits = (do a <- commaToken <?> ","
                        b <- digitSequence
                        return (a:b)) <|> (return [])
 
@@ -51,12 +51,8 @@ array = do
 
 commaToken :: Parsec [Token] st Token
 commaToken = tokenPrim show update_pos get_token where
-    get_token Comma = Just Comma
-    get_token _         = Nothing  
--- commaToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
--- commaToken = tokenPrim show update_pos get_token where
---     get_token (Comma x) = Just (Comma x)
---     get_token _         = Nothing
+    get_token (Comma x) = Just (Comma x)
+    get_token _         = Nothing
     
 keywordToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 keywordToken = tokenPrim show update_pos get_token where
