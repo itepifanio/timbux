@@ -25,11 +25,11 @@ generalStatement stmt = do
     a <- keywordToken <?> stmt
     b <- blockBeginToken <?> "("
     c <- logicStatement
-    f <- blockEndToken   <?> ")"
-    g <- blockBeginToken <?> "{"
-    h <- stmts
-    i <- blockEndToken   <?> "}"
-    return (a:b:c++f:g:[]++h++i:[])
+    d <- blockEndToken   <?> ")"
+    e <- blockBeginToken <?> "{"
+    f <- stmts
+    g <- blockEndToken   <?> "}"
+    return (a:b:c++d:e:[]++f++g:[])
 
 {-elseStatement :: Parsec [Token] st [Token]
 elseStatement = do
@@ -43,7 +43,10 @@ whileStatement :: Parsec [Token] st [Token]
 whileStatement = generalStatement "while"
 
 ifStatement :: Parsec [Token] st [Token]
-ifStatement = generalStatement "if"
+ifStatement = onlyIfStatement
+
+onlyIfStatement :: Parsec [Token] st [Token]
+onlyIfStatement = generalStatement "if"
 
 ifElseStatement :: Parsec [Token] st [Token]
 ifElseStatement = do
@@ -94,19 +97,19 @@ logicStatement = do
             c <- idToken <|> floatToken <|> intToken
             return(a:b:[c])
 
--- forStatement :: Parsec [Token] st [Token]
--- forStatement = do
---     a <- keywordToken <?> "for"
---     b <- blockBeginToken <?> "("
---     c <- assign
---     d <- logicStatement
---     e <- semicolonToken
---     f <- logicStatement
---     l <- blockEndToken   <?> ")"
---     m <- blockBeginToken <?> "{"
---     n <- stmts
---     o <- blockEndToken   <?> "}"
---     return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m:n ++ [o]))
+forStatement :: Parsec [Token] st [Token]
+forStatement = do
+     a <- keywordToken
+     b <- blockBeginToken <?> "("
+     c <- assign
+     d <- logicStatement
+     e <- semicolonToken
+     f <- logicStatement
+     l <- blockEndToken   <?> ")"
+     m <- blockBeginToken <?> "{"
+     n <- stmts
+     o <- blockEndToken   <?> "}"
+     return (a:b:c ++ d ++ [e] ++ f ++ (l:m:n ++ [o]))
 
 singletonToken:: Parsec [Token] st [Token]
 singletonToken = do
