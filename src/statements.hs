@@ -43,7 +43,9 @@ whileStatement :: Parsec [Token] st [Token]
 whileStatement = generalStatement "while"
 
 ifStatement :: Parsec [Token] st [Token]
-ifStatement = onlyIfStatement
+ifStatement = do
+              a <- ifElseStatement <|> onlyIfStatement
+              return a
 
 onlyIfStatement :: Parsec [Token] st [Token]
 onlyIfStatement = generalStatement "if"
@@ -118,9 +120,23 @@ singletonToken = do
 
 assign :: Parsec [Token] st [Token]
 assign = do
+        a <- instAssign <|> justAssign
+        return a;
+
+instAssign :: Parsec [Token] st [Token]
+instAssign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
           d <- singletonToken <|> array 
           e <- semicolonToken
           return (a:b:c:d ++ [e])
+
+
+justAssign :: Parsec [Token] st [Token]
+justAssign = do
+          a <- idToken
+          b <- assignToken
+          c <- singletonToken <|> array 
+          d <- semicolonToken
+          return (a:b:c ++ [d])
