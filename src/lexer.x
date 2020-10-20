@@ -22,6 +22,7 @@ tokens :-
   "Ghbc"                                       { \p -> Ghbc }
   "="                                          { \p -> Assign }
   ";"                                          { \p -> Semicolon }
+  "\""                                         { \p -> Quote }
   $blockBegin                                  { \p -> BlockBegin (head p) } 
   $blockEnd                                    { \p -> BlockEnd (head p) } 
   (\=+\=|\>+\=|\<+\=|\>|\<)                    { \p -> ComparativeOp p}
@@ -51,6 +52,7 @@ data Token =
     Ghbc                    |
     Assign                  |
     Semicolon               |
+    Quote                   |
     OpenBrackets            |
     ClosedBrackets          |
     PrimitiveType   String  |

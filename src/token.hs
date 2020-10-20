@@ -19,20 +19,33 @@ digitSequence = do
         first <- (intToken <|> floatToken)
         next <- remaining_digits
         return([first]++next)
+
 arraySequence::Parsec [Token] st [Token]
 arraySequence = do
         first <- array
         next <- remaining_arrays
         return(first++next)
 
+nameSequence::Parsec [Token] st [Token]
+nameSequence = do
+        first <- nameToken
+        next <- remaining_names
+        return([first]++next) 
+
 remaining_digits :: Parsec [Token] st [Token]
 remaining_digits = (do a <- commaToken <?> ","
                        b <- digitSequence
                        return (a:b)) <|> (return [])
+
 remaining_arrays :: Parsec [Token] st [Token]
 remaining_arrays = (do a <- commaToken <?> ","
                        b <- arraySequence
                        return (a:b)) <|> (return [])
+
+remaining_names :: Parsec [Token] st [Token]
+remaining_names = (do  b <- nameSequence
+                       return (b)) <|> (return [])
+
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 floatToken = tokenPrim show update_pos get_token where
@@ -49,6 +62,18 @@ booleanToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
     get_token _           = Nothing
+
+nameToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+nameToken = tokenPrim show update_pos get_token where
+    get_token (Name x) = Just (Name x)
+    get_token _           = Nothing
+
+stringTeste :: Parsec [Token] st [Token]
+stringTeste = do
+          open <- commaToken <?> "\""
+          values <- nameSequence
+          close <- commaToken <?> "\""
+          return (open:values++[close])
 
 array :: Parsec [Token] st [Token]
 array = do
