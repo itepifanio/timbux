@@ -100,30 +100,3 @@ endToken :: Parsec [Token] st Token
 endToken = tokenPrim show update_pos get_token where
     get_token Ghbc = Just Ghbc
     get_token _    = Nothing
-
--- statements
-
-ifStatement :: Parsec [Token] st [Token]
-ifStatement = do
-    a <- keywordToken                                       
-    b <- blockBeginToken <?> "("                        
-    c <- idToken <|> floatToken <|> intToken        
-    d <- comparativeOpToken                           
-    e <- idToken <|> floatToken <|> intToken        
-    f <- blockEndToken   <?> ")"                    
-    g <- blockBeginToken <?> "{"                    
-    h <- assign -- adicionar as outras estruturas posteriormente 
-    i <- blockEndToken   <?> "}"                    
-    return (a:b:c:d:e:f:g:h ++ [i])
-
-singletonToken:: Parsec [Token] st [Token]
-singletonToken = do
-            a <- intToken <|> floatToken <|> booleanToken
-            return([a])
-assign :: Parsec [Token] st [Token]
-assign = do
-          a <- primitiveTypeToken
-          b <- idToken
-          c <- assignToken
-          d <- singletonToken <|> array
-          return (a:b:c:d)

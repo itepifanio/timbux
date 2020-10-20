@@ -2,6 +2,7 @@ module Main (main) where
 
 import Lexer
 import Token
+import Statement
 import Text.Parsec
 import Data.Functor.Identity
 
@@ -12,18 +13,6 @@ program = do
         c <- stmts
         eof
         return ([a] ++ [b] ++ c)
-
-stmts :: Parsec [Token] st [Token]
-stmts = do
-          first <- assign
-        --   first <- assign <|> ifStatement
-          next  <- remaining_stmts
-          return (first ++ next) <|> (return [])
-          
-remaining_stmts :: Parsec [Token] st [Token]
-remaining_stmts = (do a <- semicolonToken
-                      b <- stmts <|> endProgram
-                      return (a:b)) <|> (return [])
 
 endProgram :: Parsec [Token] st [Token]
 endProgram = do
