@@ -62,9 +62,9 @@ commaToken = tokenPrim show update_pos get_token where
     get_token (Comma x) = Just (Comma x)
     get_token _         = Nothing
     
-keywordToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
-keywordToken = tokenPrim show update_pos get_token where
-    get_token (Keyword x) = Just (Keyword x)
+keywordToken :: String -> ParsecT [Token] st Data.Functor.Identity.Identity Token
+keywordToken stmt = tokenPrim show update_pos get_token where
+    get_token (Keyword x) = if x == stmt then Just (Keyword x) else Nothing
     get_token _         = Nothing
 
 blockBeginToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token

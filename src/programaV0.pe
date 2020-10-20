@@ -8,9 +8,9 @@ Let primeiroPrograma
       float y = 4;
    }
 
-   -- for ( float i = 0 ; i < 10; i += 1) {
-   --   int x = 1;
-   -- }
+   for( int i = 0 ; i < 10; i < 1) {
+      int x = 1;
+   }
 
    float y = 2.2;
    int z = 10;
