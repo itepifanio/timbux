@@ -14,6 +14,16 @@ idToken = tokenPrim show update_pos get_token where
     get_token (Name x) = Just (Name x)
     get_token _        = Nothing
 
+digitSequence::Parsec [Token] st [Token]
+digitSequence = do
+        first <- (intToken <|> floatToken)
+        next <- remaining_digits
+        return([first]++next)
+remaining_digits :: Parsec [Token] st [Token]
+remaining_digits = (do a <- commaToken <?> ","
+                       b <- digitSequence
+                       return (a:b)) <|> (return [])
+
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 floatToken = tokenPrim show update_pos get_token where
@@ -30,12 +40,20 @@ booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
     get_token _           = Nothing
 
+array :: Parsec [Token] st [Token]
+array = do
+          open <- blockBeginToken <?> "["
+          values <- digitSequence
+          close <- blockEndToken <?> "]"
+          return (values)
+
 -- general statements
-commaToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+
+commaToken :: Parsec [Token] st Token
 commaToken = tokenPrim show update_pos get_token where
     get_token (Comma x) = Just (Comma x)
     get_token _         = Nothing
-
+    
 keywordToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 keywordToken = tokenPrim show update_pos get_token where
     get_token (Keyword x) = Just (Keyword x)
@@ -87,21 +105,25 @@ endToken = tokenPrim show update_pos get_token where
 
 ifStatement :: Parsec [Token] st [Token]
 ifStatement = do
-    a <- keywordToken
-    b <- blockBeginToken <?> "("
-    c <- idToken <|> floatToken <|> intToken
-    d <- comparativeOpToken
-    e <- idToken <|> floatToken <|> intToken
-    f <- blockEndToken   <?> ")"
-    g <- blockBeginToken <?> "{"
-    h <- assign -- adicionar as outras estruturas posteriormente
-    i <- blockEndToken   <?> "}"
+    a <- keywordToken                                       
+    b <- blockBeginToken <?> "("                        
+    c <- idToken <|> floatToken <|> intToken        
+    d <- comparativeOpToken                           
+    e <- idToken <|> floatToken <|> intToken        
+    f <- blockEndToken   <?> ")"                    
+    g <- blockBeginToken <?> "{"                    
+    h <- assign -- adicionar as outras estruturas posteriormente 
+    i <- blockEndToken   <?> "}"                    
     return (a:b:c:d:e:f:g:h ++ [i])
 
+singletonToken:: Parsec [Token] st [Token]
+singletonToken = do
+            a <- intToken <|> floatToken <|> booleanToken
+            return([a])
 assign :: Parsec [Token] st [Token]
 assign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- (intToken <|> floatToken <|> booleanToken)
-          return (a:b:c:[d])
+          d <- singletonToken <|> array
+          return (a:b:c:d)

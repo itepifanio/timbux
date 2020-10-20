@@ -15,10 +15,11 @@ program = do
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
-          first <- assign <|> ifStatement
+          first <- assign
+        --   first <- assign <|> ifStatement
           next  <- remaining_stmts
           return (first ++ next) <|> (return [])
-
+          
 remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- semicolonToken
                       b <- stmts <|> endProgram
