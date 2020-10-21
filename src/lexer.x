@@ -27,7 +27,7 @@ tokens :-
   (\=+\=|\>+\=|\<+\=|\>|\<)                    { \p -> ComparativeOp p}
   (\&+\&|\|+\||\!)                             { \p -> LogicalOp p}
   $op                                          { \p -> Op (head p) } 
-  $digit+                                      { \p -> Int (read p) }
+  \-$digit+|$digit+                            { \p -> Int (read p) }
   $digit+\.$digit+                             { \p -> Float (read p) }
   (true|false)                                 { \p -> Boolean p }
   (int|float|string|array|boolean|matrix)      { \p -> PrimitiveType p}
