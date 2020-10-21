@@ -1,5 +1,5 @@
 Let primeiroPrograma
-   string a = "Oie";
+   string a = "";
    int x = 1;
    if ( x < 3 ) {
       int x = 3;

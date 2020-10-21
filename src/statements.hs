@@ -96,3 +96,18 @@ assign = do
           d <- singletonToken <|> array <|> stringTeste
           e <- semicolonToken
           return (a:b:c:d ++ [e])
+
+nameSequence::Parsec [Token] st [Token]
+nameSequence = do
+        first <- stmts
+        next <- remaining_names
+        return(first++next) 
+remaining_names :: Parsec [Token] st [Token]
+remaining_names = (do  b <- nameSequence
+                       return (b)) <|> (return [])
+stringTeste :: Parsec [Token] st [Token]
+stringTeste = do
+          open <- commaToken <?> "\""
+          values <- nameSequence
+          close <- commaToken <?> "\""
+          return (open:values++[close])
