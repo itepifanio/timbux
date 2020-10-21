@@ -9767,7 +9767,7 @@ alex_actions = array (0 :: Int, 76)
 
 data Token =
 	  Op              Char	  |
-    Comma           Char    |
+    Comma           String  |
 	  Int             Int     |
     Name            String  |
     Number          String  |
@@ -9782,8 +9782,8 @@ data Token =
     OpenBrackets            |
     ClosedBrackets          |
     PrimitiveType   String  |
-    BlockBegin      Char	  |
-    BlockEnd        Char	  |
+    BlockBegin      String  |
+    BlockEnd        String  |
     Keyword         String  |
     ComparativeOp   String  |
     String          String  |
@@ -9800,8 +9800,8 @@ alex_action_2 =  \p -> Let
 alex_action_3 =  \p -> Ghbc 
 alex_action_4 =  \p -> Assign 
 alex_action_5 =  \p -> Semicolon 
-alex_action_6 =  \p -> BlockBegin (head p) 
-alex_action_7 =  \p -> BlockEnd (head p) 
+alex_action_6 =  \p -> BlockBegin p
+alex_action_7 =  \p -> BlockEnd p
 alex_action_8 =  \p -> ComparativeOp p
 alex_action_9 =  \p -> LogicalOp p
 alex_action_10 =  \p -> Op (head p) 
@@ -9810,7 +9810,7 @@ alex_action_12 =  \p -> Float (read p)
 alex_action_13 =  \p -> Boolean p 
 alex_action_14 =  \p -> PrimitiveType p
 alex_action_15 =  \p -> Keyword p
-alex_action_16 =  \p -> Comma (head p)
+alex_action_16 =  \p -> Comma p
 alex_action_17 =  \p -> Name p 
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}

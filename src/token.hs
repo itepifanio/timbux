@@ -26,11 +26,11 @@ arraySequence = do
         return(first++next)
 
 remaining_digits :: Parsec [Token] st [Token]
-remaining_digits = (do a <- commaToken <?> ","
+remaining_digits = (do a <- commaToken ","
                        b <- digitSequence
                        return (a:b)) <|> (return [])
 remaining_arrays :: Parsec [Token] st [Token]
-remaining_arrays = (do a <- commaToken <?> ","
+remaining_arrays = (do a <- commaToken ","
                        b <- arraySequence
                        return (a:b)) <|> (return [])
 -- language types
@@ -52,29 +52,29 @@ booleanToken = tokenPrim show update_pos get_token where
 
 array :: Parsec [Token] st [Token]
 array = do
-          open <- blockBeginToken <?> "["
+          open <- blockBeginToken "["
           values <- digitSequence <|> arraySequence
-          close <- blockEndToken <?> "]"
+          close <- blockEndToken "]"
           return (open:values++[close])
 
-commaToken :: Parsec [Token] st Token
-commaToken = tokenPrim show update_pos get_token where
-    get_token (Comma x) = Just (Comma x)
+commaToken :: String -> Parsec [Token] st Token
+commaToken stmt = tokenPrim show update_pos get_token where
+    get_token (Comma x) = if x == stmt then Just (Comma x) else Nothing
     get_token _         = Nothing
     
-keywordToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
-keywordToken = tokenPrim show update_pos get_token where
-    get_token (Keyword x) = Just (Keyword x)
+keywordToken :: String -> ParsecT [Token] st Data.Functor.Identity.Identity Token
+keywordToken stmt = tokenPrim show update_pos get_token where
+    get_token (Keyword x) = if x == stmt then Just (Keyword x) else Nothing
     get_token _         = Nothing
 
-blockBeginToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
-blockBeginToken = tokenPrim show update_pos get_token where
-    get_token (BlockBegin x) = Just (BlockBegin x)
+blockBeginToken :: String -> ParsecT [Token] st Data.Functor.Identity.Identity Token
+blockBeginToken stmt = tokenPrim show update_pos get_token where
+    get_token (BlockBegin x) = if x == stmt then Just (BlockBegin x) else Nothing
     get_token _         = Nothing    
 
-blockEndToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
-blockEndToken = tokenPrim show update_pos get_token where
-    get_token (BlockEnd x) = Just (BlockEnd x)
+blockEndToken :: String -> ParsecT [Token] st Data.Functor.Identity.Identity Token
+blockEndToken stmt = tokenPrim show update_pos get_token where
+    get_token (BlockEnd x) = if x == stmt then Just (BlockEnd x) else Nothing
     get_token _         = Nothing
 
 assignToken :: Parsec [Token] st Token
