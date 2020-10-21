@@ -11,8 +11,8 @@ Usuários sobre a linguagem: "aaaaaaaaaaaaAAAAAAAAAAAAAaaAAAaa"
 # Get it working
 
 `alex ./src/lexer.x`<br><br>
-`ghc ./src/lexer.hs`<br><br>
-`./src/lexer < ./program/program.pe`<br><br>
+`ghc ./src/lexer.hs ./src/token.hs ./src/statements.hs ./src/parser.hs`<br><br>
+`./src/parser.hs`<br><br>
 
 ```shell
 // Rodando tudo em uma linha
