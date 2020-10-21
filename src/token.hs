@@ -14,11 +14,17 @@ idToken = tokenPrim show update_pos get_token where
     get_token (Name x) = Just (Name x)
     get_token _        = Nothing
 
+stringToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+stringToken = tokenPrim show update_pos get_token where
+    get_token (String x) = Just (String x)
+    get_token _        = Nothing
+
 digitSequence::Parsec [Token] st [Token]
 digitSequence = do
         first <- (intToken <|> floatToken)
         next <- remaining_digits
         return([first]++next)
+
 arraySequence::Parsec [Token] st [Token]
 arraySequence = do
         first <- array
@@ -29,10 +35,12 @@ remaining_digits :: Parsec [Token] st [Token]
 remaining_digits = (do a <- commaToken ","
                        b <- digitSequence
                        return (a:b)) <|> (return [])
+
 remaining_arrays :: Parsec [Token] st [Token]
 remaining_arrays = (do a <- commaToken ","
                        b <- arraySequence
                        return (a:b)) <|> (return [])
+
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 floatToken = tokenPrim show update_pos get_token where

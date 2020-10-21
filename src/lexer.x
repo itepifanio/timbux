@@ -13,9 +13,10 @@ $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
 $comma = [\,\"\']
-
+$stringCommas = [\'\,\.\;\:\=\>\<\\\/\|\!\$\%\@\&]
 tokens :-
 
+  \"+($alpha|$digit|$whitespace|$blockBegin|$blockEnd|$op|$stringCommas)+\"  { \p -> String p }
   $white+                                      ;
   "--".*                                       ;
   "Let"                                        { \p -> Let  } 
@@ -51,6 +52,7 @@ data Token =
     Ghbc                    |
     Assign                  |
     Semicolon               |
+    Quote                   |
     OpenBrackets            |
     ClosedBrackets          |
     PrimitiveType   String  |
