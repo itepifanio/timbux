@@ -14,6 +14,11 @@ idToken = tokenPrim show update_pos get_token where
     get_token (Name x) = Just (Name x)
     get_token _        = Nothing
 
+stringToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+stringToken = tokenPrim show update_pos get_token where
+    get_token (String x) = Just (String x)
+    get_token _        = Nothing
+
 digitSequence::Parsec [Token] st [Token]
 digitSequence = do
         first <- (intToken <|> floatToken)
@@ -26,17 +31,6 @@ arraySequence = do
         next <- remaining_arrays
         return(first++next)
 
-stringSingularToken :: Parsec [Token] st [Token]
-stringSingularToken = do
-        a <- idToken <|> intToken <|> booleanToken <|> floatToken <|> assignToken <|> comparativeOpToken <|> primitiveTypeToken <|> semicolonToken <|> beginToken <|> endToken <|> commaToken "," <|> commaToken "'"
-        return([a])
-
-nameSequence::Parsec [Token] st [Token]
-nameSequence = do
-        first <- stringSingularToken <|> array
-        next <- remaining_names
-        return(first++next) 
-
 remaining_digits :: Parsec [Token] st [Token]
 remaining_digits = (do a <- commaToken ","
                        b <- digitSequence
@@ -46,10 +40,6 @@ remaining_arrays :: Parsec [Token] st [Token]
 remaining_arrays = (do a <- commaToken ","
                        b <- arraySequence
                        return (a:b)) <|> (return [])
-
-remaining_names :: Parsec [Token] st [Token]
-remaining_names = (do  b <- nameSequence
-                       return (b)) <|> (return [])
 
 -- language types
 floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
@@ -67,13 +57,6 @@ booleanToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
     get_token _           = Nothing
-
-stringTeste :: Parsec [Token] st [Token]
-stringTeste = do
-          open <- commaToken "\""
-          values <- nameSequence
-          close <- commaToken "\""
-          return (open:values++[close])
 
 array :: Parsec [Token] st [Token]
 array = do

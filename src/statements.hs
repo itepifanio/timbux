@@ -76,7 +76,7 @@ forStatement = do
 
 singletonToken:: Parsec [Token] st [Token]
 singletonToken = do
-            a <- intToken <|> floatToken <|> booleanToken
+            a <- intToken <|> floatToken <|> booleanToken <|> stringToken
             return([a])
 
 assign :: Parsec [Token] st [Token]
@@ -89,7 +89,7 @@ instAssign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- singletonToken <|> array <|> stringTeste
+          d <- singletonToken <|> array
           e <- semicolonToken
           return (a:b:c:d ++ [e])
 

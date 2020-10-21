@@ -1,5 +1,5 @@
 Let primeiroPrograma
-   string a = "int, oi";
+   string a = "oi, 12{{ + ++ }} 2.34 // == | && ";
    int x = 1;
    if(a>3){
       int c = -3;

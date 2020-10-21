@@ -13,9 +13,10 @@ $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
 $comma = [\,\"\']
-
+$stringCommas = [\'\,\.\;\:\=\>\<\\\/\|\!\$\%\@]
 tokens :-
 
+  \"+($alpha|$digit|$whitespace|$blockBegin|$blockEnd|$op|$stringCommas|\&+\&|\|+\||\=+\=|\>+\=|\<+\=|true|false|int|float|string|array|boolean|matrixif|else|for|continue|break|while|const|var|"Let"|"Ghbc")+\"  { \p -> String p }
   $white+                                      ;
   "--".*                                       ;
   "Let"                                        { \p -> Let  } 
