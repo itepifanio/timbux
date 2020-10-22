@@ -1,0 +1,28 @@
+Let primeiroPrograma
+   string a = "oi for, int => 12{{ + ++ }} 2.34 // == | $$ ";
+   int x = 1;
+   if(a>3){
+      int c = -3;
+   } else {
+      d = 2;
+   }
+
+   if( a > 3){
+      int c = 3;
+   }
+   
+   while ( y < x ) {
+      float y = 4;
+   }
+
+   for( int i = 0 ; i < 10; i < 1) {
+      int x = 1;
+   }
+
+   float y = 2.2;
+   int z = 10;
+   array a = [1, 2, 4];
+   array b = [3, 22, 43];
+   array a = [[1,2,3], [2,3,4]];
+   int i = 2;
+Ghbc

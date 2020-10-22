@@ -6,9 +6,9 @@ import System.IO.Unsafe
 
 %wrapper "basic"
 
-$digit = 0-9			-- digits
-$alpha = [a-zA-Z]		-- alphabetic characters
-$op = [\#\+\-\*]      -- operacoes
+$digit = 0-9           -- digits
+$alpha = [a-zA-Z]      -- alphabetic characters
+$op = [\#\+\-\*]       -- operacoes
 $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
 $blockEnd = [\)\]\}]
@@ -39,9 +39,9 @@ tokens :-
 {
 
 data Token =
-	  Op              Char	  |
+    Op              Char    |
     Comma           String  |
-	  Int             Int     |
+    Int             Int     |
     Name            String  |
     Number          String  |
     Boolean         String  |
@@ -62,7 +62,7 @@ data Token =
     ComparativeOp   String  |
     String          String  |
     LogicalOp       String 
-	deriving (Eq,Show)
+    deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
 
