@@ -111,6 +111,11 @@ beginToken = tokenPrim show update_pos get_token where
     get_token Let = Just Let
     get_token _   = Nothing
 
+opToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
+opToken = tokenPrim show update_pos get_token where
+    get_token (Op x) = Just (Op x)
+    get_token _      = Nothing
+
 -- e termina com o ghbc
 endToken :: Parsec [Token] st Token
 endToken = tokenPrim show update_pos get_token where

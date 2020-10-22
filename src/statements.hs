@@ -76,7 +76,7 @@ forStatement = do
 
 singletonToken:: Parsec [Token] st [Token]
 singletonToken = do
-            a <- intToken <|> floatToken <|> booleanToken <|> stringToken
+            a <- intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
             return([a])
 
 assign :: Parsec [Token] st [Token]
@@ -89,7 +89,7 @@ instAssign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- singletonToken <|> array
+          d <- operation <|> singletonToken <|> array
           e <- semicolonToken
           return (a:b:c:d ++ [e])
 
@@ -97,6 +97,18 @@ justAssign :: Parsec [Token] st [Token]
 justAssign = do
           a <- idToken
           b <- assignToken
-          c <- singletonToken <|> array 
+          c <- operation <|> singletonToken <|> array
           d <- semicolonToken
           return (a:b:c ++ [d])
+
+operation :: Parsec [Token] st [Token]
+operation = do
+    a <- singletonToken <|> array
+    b <- remaining_operations
+    return (a ++ b) <|> (return []) 
+
+remaining_operations :: Parsec [Token] st [Token]
+remaining_operations = (do
+    a <- opToken
+    b <- operation
+    return (a:b)) <|> (return [])

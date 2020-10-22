@@ -15,7 +15,8 @@ Usuários sobre a linguagem: "aaaaaaaaaaaaAAAAAAAAAAAAAaaAAAaa"
 `./src/parser.hs`<br><br>
 
 ```shell
-// Rodando tudo em uma linha
-alex ./src/lexer.x && ghc ./src/lexer.hs && ./src/lexer < ./program/program.pe && ghci src/parser.hs src/lexer.hs src/typedata/matrix.hs
+// Rodando pelo ghci
+alex ./src/lexer.x && ghci ./src/parser.hs ./src/token.hs ./src/lexer.hs ./src/statements.hs
+main
 ```
 
