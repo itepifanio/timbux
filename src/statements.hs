@@ -5,23 +5,23 @@ import Token
 import Text.Parsec
 import Memory
 
-stmts :: Parsec [Token] st [Token]
+-- stmts :: Parsec [Token] st [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement
+        first <- assign -- <|> ifStatement <|> whileStatement <|> forStatement
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
-remaining_stmts :: Parsec [Token] st [Token]
+-- remaining_stmts :: Parsec [Token] st [Token]
 remaining_stmts = (do a <- stmts <|> endProgram
                       return a) <|> (return [])
 
-endProgram :: Parsec [Token] st [Token]
+-- endProgram :: Parsec [Token] st [Token]
 endProgram = do
            a <- endToken
            eof
            return ([a])
 
-generalStatement :: String -> Parsec [Token] st [Token]
+-- generalStatement :: String -> Parsec [Token] st [Token]
 generalStatement stmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
@@ -34,18 +34,18 @@ generalStatement stmt = do
     i <- blockEndToken   "}"
     return (a:b:c:d:e:f:g:h ++ [i])
 
-whileStatement :: Parsec [Token] st [Token]
+-- whileStatement :: Parsec [Token] st [Token]
 whileStatement = generalStatement "while"
 
-ifStatement :: Parsec [Token] st [Token]
+-- ifStatement :: Parsec [Token] st [Token]
 ifStatement = do
               a <- try ifElseStatement <|> onlyIfStatement
               return a
 
-onlyIfStatement :: Parsec [Token] st [Token]
+-- onlyIfStatement :: Parsec [Token] st [Token]
 onlyIfStatement = generalStatement "if"
 
-ifElseStatement :: Parsec [Token] st [Token]
+-- ifElseStatement :: Parsec [Token] st [Token]
 ifElseStatement = do
     a <- onlyIfStatement
     b <- keywordToken "else"
@@ -54,14 +54,14 @@ ifElseStatement = do
     e <- blockEndToken "}"
     return (a ++ b:c:d ++ [e])
 
-logicStatement :: Parsec [Token] st [Token]
+-- logicStatement :: Parsec [Token] st [Token]
 logicStatement = do
     a <- idToken <|> floatToken <|> intToken
     b <- comparativeOpToken
     c <- idToken <|> floatToken <|> intToken
     return (a:b:[c])
 
-forStatement :: Parsec [Token] st [Token]
+-- forStatement :: Parsec [Token] st [Token]
 forStatement = do
     a <- keywordToken "for"
     b <- blockBeginToken "("
@@ -80,12 +80,12 @@ singletonToken = do
             a <- intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
             return([a])
 
-assign :: Parsec [Token] st [Token]
+-- assign :: Parsec [Token] st [Token]
 assign = do
-        a <- instAssign <|> justAssign
-        return a;
+        a <- instAssign -- <|> justAssign
+        return a
 
-instAssign :: Parsec [Token] st [Token]
+-- instAssign :: Parsec [Token] st [Token]
 instAssign = do
           a <- primitiveTypeToken
           b <- idToken
@@ -93,7 +93,7 @@ instAssign = do
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
         --   setArgument(a b [d])
-          symtableInsert(Int(1, "a", "escopo"))
+          updateState (symtableInsert (MyInt 1 "a" "escopo"))
           return (a:b:c:d ++ [e])
 
 justAssign :: Parsec [Token] st [Token]

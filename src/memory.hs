@@ -13,9 +13,13 @@ module Memory where
 --              8 9 
 -- Array ([(6,[0 0]), (7, [0 1]), (8, [1 0]), (9, [1 1])], "escopo", "meu_array", 2, 2)
 
--- | MyArray [(Type -> [Int])] String String Int Int
+-- | MyArray [(Type, [Int])] String String Int Int
 
-data Type = MyInt Int String String | MyFloat Float String String | MyString String String String deriving (Show)
+data Type = MyInt Int String String                       |
+            MyFloat Float String String                   | 
+            MyString String String String                 | 
+            MyArray [(Type, [Int])] String String Int Int 
+            deriving (Show)
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
