@@ -3,6 +3,7 @@ module Statement where
 import Lexer
 import Token
 import Text.Parsec
+import Memory
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
@@ -91,6 +92,8 @@ instAssign = do
           c <- assignToken
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
+        --   setArgument(a b [d])
+          symtableInsert(Int(1, "a", "escopo"))
           return (a:b:c:d ++ [e])
 
 justAssign :: Parsec [Token] st [Token]
