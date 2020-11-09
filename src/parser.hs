@@ -7,7 +7,7 @@ import Statement
 import Text.Parsec
 import Data.Functor.Identity
 
--- program :: Parsec [Token] st [Token]
+program :: ParsecT [Token] [Type] Identity [Token]
 program = do
         a <- beginToken 
         b <- idToken -- nome do programa
@@ -15,13 +15,13 @@ program = do
         eof
         return ([a] ++ [b] ++ c)
 
--- endProgram :: Parsec [Token] st [Token]
+endProgram :: ParsecT [Token] st Identity [Token]
 endProgram = do
            a <- endToken
            eof
            return ([a]) 
 
--- parser :: [Token] -> Either ParseError [Token]
+parser :: [Token] -> Either ParseError [Token]
 parser tokens = runParser program [] "Error message" tokens
 
 main :: IO ()
