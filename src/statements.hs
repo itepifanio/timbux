@@ -94,7 +94,7 @@ instAssign = do
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
         --   setArgument(a b [d])
-          updateState (symtableInsert (MyInt 1 "a" "escopo"))
+          updateState (symtableInsert (MyArray [(MyInt 1, [1])] "a" "escopo" [1]))
           return (a:b:c:d ++ [e])
 
 justAssign :: Parsec [Token] st [Token]
