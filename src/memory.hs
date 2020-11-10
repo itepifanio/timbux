@@ -22,15 +22,14 @@ data Typex = MyInt Int |
                    
 data Type = MyType Typex String String |
             MyArray [(Typex, [Int])] String String [Int]
-
--- data Type = MyInt Int String String                       |
---             MyFloat Float String String                   | 
---             MyString String String String                 | 
---             MyArray [(Int, [Int])] String String Int Int 
---             deriving (Show)
+            deriving (Show)
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
 symtableInsert symbol table = table++[symbol]
 
-
+symtableUpdate :: Type -> [Type] -> [Type]
+symtableUpdate _ [] = fail "Not found"
+symtableUpdate (MyType (MyInt v1) id1 es) ((MyType (MyInt v2) id2 es2):t) =  
+                            if id1 == id2 then ((MyType (MyInt v1) id1 es) : t)
+                            else (MyType (MyInt v2) id2 es2) : symtableUpdate (MyType (MyInt v1) id1 es) t
