@@ -31,5 +31,11 @@ symtableInsert symbol table = table++[symbol]
 symtableUpdate :: Type -> [Type] -> [Type]
 symtableUpdate _ [] = fail "Not found"
 symtableUpdate (MyType (MyInt v1) id1 es) ((MyType (MyInt v2) id2 es2):t) =  
-                            if id1 == id2 then ((MyType (MyInt v1) id1 es) : t)
+                            if id1 == id2 && es == es2 then ((MyType (MyInt v1) id1 es) : t)
                             else (MyType (MyInt v2) id2 es2) : symtableUpdate (MyType (MyInt v1) id1 es) t
+
+symtableDelete :: String -> [Type] -> [Type]
+symtableDelete _ [] = []
+symtableDelete  escopo ((MyType (MyInt v2) id2 es2):t) =  
+                            if escopo == es2 then t 
+                            else (MyType (MyInt v2) id2 es2) : symtableDelete escopo t
