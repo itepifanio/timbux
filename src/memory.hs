@@ -15,12 +15,12 @@ module Memory where
 -- Array [()]
 -- | MyArray [(Type, [Int])] String String Int Int
 
-data Typex = MyInt Int |
-             MyFloat Float |
+data Typex = MyInt Int       |
+             MyFloat Float   |
              MyString String 
              deriving (Show)
                    
-data Type = MyType Typex String String |
+data Type = MyType Typex String String                   |
             MyArray [(Typex, [Int])] String String [Int]
             deriving (Show)
 
@@ -30,12 +30,16 @@ symtableInsert symbol table = table++[symbol]
 
 symtableUpdate :: Type -> [Type] -> [Type]
 symtableUpdate _ [] = fail "Not found"
-symtableUpdate (MyType (MyInt v1) id1 es) ((MyType (MyInt v2) id2 es2):t) =  
-                            if id1 == id2 && es == es2 then ((MyType (MyInt v1) id1 es) : t)
-                            else (MyType (MyInt v2) id2 es2) : symtableUpdate (MyType (MyInt v1) id1 es) t
+symtableUpdate (MyType (_ v1) id1 es) ((MyType (_ v2) id2 es2):t) =  
+                            if id1 == id2 && es == es2 then ((MyType (_ v1) id1 es) : t)
+                            else (MyType (_ v2) id2 es2) : symtableUpdate (MyType (_ v1) id1 es) t
 
-symtableDelete :: String -> [Type] -> [Type]
+symtableDelete :: Type -> [Type] -> [Type]
 symtableDelete _ [] = []
-symtableDelete  escopo ((MyType (MyInt v2) id2 es2):t) =  
-                            if escopo == es2 then t 
-                            else (MyType (MyInt v2) id2 es2) : symtableDelete escopo t
+symtableDelete (_ _ nome escopo) ((_ _ id2 es2):t) =  
+                            if escopo == es2 && nome == id2 then t
+                            else (_ _ id2 es2) : symtableDelete escopo t
+
+-- TODO::adicionar o token 'function' no lexer.x, criar no arquivo token.hs o Token em si, 
+--       criar no stmts.hs a estrutura da função.
+-- symtableDeleteScope :: String -> [Type] -> [Type]
