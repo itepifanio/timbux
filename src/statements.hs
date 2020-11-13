@@ -123,9 +123,17 @@ arguments = do
         a <- justInst
         return (a++[])<|>(return [])
 
---function :: Parsec [Token] st [Token]
---operation = do
---    a <- primitiveTypeToken 
+function :: Parsec [Token] st [Token]
+function = do
+    a <- primitiveTypeToken
+    b <- idToken
+    c <- blockBeginToken "("
+    d <- arguments
+    e <- blockBeginToken ")"
+    f <- blockBeginToken "{"
+    g <- stmts
+    h <- blockEndToken  "}"
+    return ((a:b:[c])++d++[f]++g++[h])
 
 
 remaining_operations :: Parsec [Token] st [Token]
