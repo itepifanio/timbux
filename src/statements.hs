@@ -101,14 +101,37 @@ justAssign = do
           d <- semicolonToken
           return (a:b:c ++ [d])
 
+justInst :: Parsec [Token] st [Token]
+justInst = do
+          a <- primitiveTypeToken
+          b <- idToken
+          return (a:[b])
+
 operation :: Parsec [Token] st [Token]
 operation = do
     a <- singletonToken <|> array
     b <- remaining_operations
     return (a ++ b) <|> (return []) 
 
+--argument :: Parsec [Token] st [Token]
+--argument = (do a <- justInst
+--               b <- commaToken ","
+--               return a:[b]) <|> (return [])
+
+arguments :: Parsec [Token] st [Token]
+arguments = do
+        a <- justInst
+        return (a++[])<|>(return [])
+
+--function :: Parsec [Token] st [Token]
+--operation = do
+--    a <- primitiveTypeToken 
+
+
 remaining_operations :: Parsec [Token] st [Token]
 remaining_operations = (do
     a <- opToken
     b <- operation
     return (a:b)) <|> (return [])
+
+
