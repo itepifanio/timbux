@@ -1,4 +1,9 @@
 Let primeiroPrograma
+   int trigo(int i){
+      int j=2;
+   }
+
+
    string a = "oi for, int => 12{{ + ++ }} 2.34 // == | $$ ";
    int x = 1;
    if(a>3){

@@ -6,7 +6,7 @@ import Text.Parsec
 
 stmts :: Parsec [Token] st [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|>  function
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -123,17 +123,22 @@ arguments = do
         a <- justInst
         return (a++[])<|>(return [])
 
+
+
 function :: Parsec [Token] st [Token]
 function = do
     a <- primitiveTypeToken
     b <- idToken
     c <- blockBeginToken "("
     d <- arguments
-    e <- blockBeginToken ")"
+    e <- blockEndToken ")"
     f <- blockBeginToken "{"
     g <- stmts
     h <- blockEndToken  "}"
-    return ((a:b:[c])++d++[f]++g++[h])
+    return ((a:b:[c])++d++[e]++[f]++g++[h])
+
+
+
 
 
 remaining_operations :: Parsec [Token] st [Token]
