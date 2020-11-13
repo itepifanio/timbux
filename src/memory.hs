@@ -30,15 +30,18 @@ symtableInsert symbol table = table++[symbol]
 
 symtableUpdate :: Type -> [Type] -> [Type]
 symtableUpdate _ [] = fail "Not found"
-symtableUpdate (MyType (_ v1) id1 es) ((MyType (_ v2) id2 es2):t) =  
-                            if id1 == id2 && es == es2 then ((MyType (_ v1) id1 es) : t)
-                            else (MyType (_ v2) id2 es2) : symtableUpdate (MyType (_ v1) id1 es) t
+symtableUpdate (MyType a id1 es) ((MyType b id2 es2):t) =  
+                            if id1 == id2 && es == es2 then ((MyType a id1 es) : t)
+                            else (MyType b id2 es2) : symtableUpdate (MyType a id1 es) t
+-- symtableUpdate (MyArray _ id1 es) ((MyArray _ id2 es2):t) =  
+--                             if id1 == id2 && es == es2 then ((MyArray (_ v1) id1 es) : t)
+--                             else (MyArray (_ v2) id2 es2) : symtableUpdate (MyArray (_ v1) id1 es) t
 
-symtableDelete :: Type -> [Type] -> [Type]
+symtableDelete :: String -> [Type] -> [Type]
 symtableDelete _ [] = []
-symtableDelete (_ _ nome escopo) ((_ _ id2 es2):t) =  
-                            if escopo == es2 && nome == id2 then t
-                            else (_ _ id2 es2) : symtableDelete escopo t
+symtableDelete es1 ((MyType typex id2 es2):t) =  
+                            if es1 == es2 then t
+                            else (MyType typex id2 es2) : symtableDelete es1 t
 
 -- TODO::adicionar o token 'function' no lexer.x, criar no arquivo token.hs o Token em si, 
 --       criar no stmts.hs a estrutura da função.
