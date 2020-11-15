@@ -16,7 +16,7 @@ Usuários sobre a linguagem: "aaaaaaaaaaaaAAAAAAAAAAAAAaaAAAaa"
 
 ```shell
 // Rodando pelo ghci
-alex ./src/lexer.x && ghci ./src/parser.hs ./src/token.hs ./src/lexer.hs ./src/statements.hs
+alex ./src/lexer.x && ghci ./src/parser.hs ./src/token.hs ./src/lexer.hs ./src/statements.hs ./src/memory.hs
 main
 ```
 

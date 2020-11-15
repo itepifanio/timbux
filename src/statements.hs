@@ -8,7 +8,7 @@ import Data.Functor.Identity
 
 stmts :: ParsecT [Token] [Type] Data.Functor.Identity.Identity [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -116,3 +116,31 @@ remaining_operations = (do
     a <- opToken
     b <- operation
     return (a:b)) <|> (return [])
+
+function :: ParsecT [Token] [Type] Identity [Token]
+function = do
+    a <- funToken
+    b <- idToken
+    c <- blockBeginToken "("
+    d <- arguments
+    e <- blockEndToken ")"
+    f <- colonToken
+    g <- primitiveTypeToken
+    h <- stmts
+    i <- endFunToken
+    j <- semicolonToken
+    return (a:b:c:d ++ [e] ++ (f:g:h) ++ (i:j:[]))
+
+arguments :: Parsec [Token] st [Token]
+arguments = do
+        a <- primitiveTypeToken
+        b <- idToken
+        c <- remainingArguments
+        return (a:b:c) <|> (return [])
+
+remainingArguments :: Parsec [Token] st [Token]
+remainingArguments = (do
+    a <- commaToken ","
+    b <- arguments
+    return (a:b)) <|> (return [])
+

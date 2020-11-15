@@ -121,3 +121,18 @@ endToken :: Parsec [Token] st Token
 endToken = tokenPrim show update_pos get_token where
     get_token Ghbc = Just Ghbc
     get_token _    = Nothing
+
+funToken :: Parsec [Token] st Token
+funToken = tokenPrim show update_pos get_token where
+    get_token Fun = Just Fun
+    get_token _   = Nothing
+
+endFunToken :: Parsec [Token] st Token
+endFunToken = tokenPrim show update_pos get_token where
+    get_token Endfun = Just Endfun
+    get_token _      = Nothing
+
+colonToken :: Parsec [Token] st Token
+colonToken = tokenPrim show update_pos get_token where
+    get_token Colon = Just Colon
+    get_token _      = Nothing
