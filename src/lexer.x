@@ -23,6 +23,9 @@ tokens :-
   "Ghbc"                                       { \p -> Ghbc }
   "="                                          { \p -> Assign }
   ";"                                          { \p -> Semicolon }
+  ":"                                          { \p -> Colon }
+  "fun"                                        { \p -> Fun }
+  "endfun"                                     { \p -> Endfun }
   (\( | \[ | \{)                               { \p -> BlockBegin p} 
   (\) | \] | \})                               { \p -> BlockEnd p} 
   (\=+\=|\>+\=|\<+\=|\>|\<)                    { \p -> ComparativeOp p}
@@ -50,8 +53,11 @@ data Token =
     Matrix                  |
     Let                     |
     Ghbc                    |
+    Fun                     |
+    Endfun                  |
     Assign                  |
     Semicolon               |
+    Colon                   |
     Quote                   |
     OpenBrackets            |
     ClosedBrackets          |

@@ -8,7 +8,7 @@ import Data.Functor.Identity
 
 stmts :: ParsecT [Token] [Type] Data.Functor.Identity.Identity [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|>  function
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -105,45 +105,11 @@ justAssign = do
           d <- semicolonToken
           return (a:b:c ++ [d])
 
-justInst :: Parsec [Token] st [Token]
-justInst = do
-          a <- primitiveTypeToken
-          b <- idToken
-          return (a:[b])
-
 operation :: Parsec [Token] st [Token]
 operation = do
     a <- singletonToken <|> array
     b <- remaining_operations
     return (a ++ b) <|> (return []) 
-
---argument :: Parsec [Token] st [Token]
---argument = (do a <- justInst
---               b <- commaToken ","
---               return a:[b]) <|> (return [])
-
-arguments :: Parsec [Token] st [Token]
-arguments = do
-        a <- justInst
-        return (a++[])<|>(return [])
-
-
-
-function :: Parsec [Token] st [Token]
-function = do
-    a <- primitiveTypeToken
-    b <- idToken
-    c <- blockBeginToken "("
-    d <- arguments
-    e <- blockEndToken ")"
-    f <- blockBeginToken "{"
-    g <- stmts
-    h <- blockEndToken  "}"
-    return ((a:b:[c])++d++[e]++[f]++g++[h])
-
-
-
-
 
 remaining_operations :: Parsec [Token] st [Token]
 remaining_operations = (do
@@ -151,4 +117,30 @@ remaining_operations = (do
     b <- operation
     return (a:b)) <|> (return [])
 
+function :: ParsecT [Token] [Type] Identity [Token]
+function = do
+    a <- funToken
+    b <- idToken
+    c <- blockBeginToken "("
+    d <- arguments
+    e <- blockEndToken ")"
+    f <- colonToken
+    g <- primitiveTypeToken
+    h <- stmts
+    i <- endFunToken
+    j <- semicolonToken
+    return (a:b:c:d ++ [e] ++ (f:g:h) ++ (i:j:[]))
+
+arguments :: Parsec [Token] st [Token]
+arguments = do
+        a <- primitiveTypeToken
+        b <- idToken
+        c <- remainingArguments
+        return (a:b:c) <|> (return [])
+
+remainingArguments :: Parsec [Token] st [Token]
+remainingArguments = (do
+    a <- commaToken ","
+    b <- arguments
+    return (a:b)) <|> (return [])
 

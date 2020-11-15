@@ -1,11 +1,11 @@
 Let primeiroPrograma
-    int trigo( string a){
-		string a = "estou intrigado";
-	}
-
+   fun trigo (string a) : int
+      string a = "estou intrigado";
+	endfun;
 
    string a = "oi for, int => 12{{ + ++ }} 2.34 // == | $$ ";
    int x = 1;
+
    if(a>3){
       int c = -3;
    } else {
