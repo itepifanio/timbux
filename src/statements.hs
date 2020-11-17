@@ -141,11 +141,11 @@ returnStatement = (do
 
 
 arguments :: Parsec [Token] st [Token]
-arguments = do
+arguments = (do
         a <- primitiveTypeToken
         b <- idToken
         c <- remainingArguments
-        return (a:b:c) <|> (return [])
+        return (a:b:c)) <|> (return [])
 
 remainingArguments :: Parsec [Token] st [Token]
 remainingArguments = (do
