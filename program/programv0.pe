@@ -1,5 +1,5 @@
 Let primeiroPrograma
-   fun trigo (string a) : int
+   fun trigo () : int
       string a = "estou intrigado";
 	endfun;
 

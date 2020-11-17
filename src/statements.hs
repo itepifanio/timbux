@@ -127,16 +127,25 @@ function = do
     f <- colonToken
     g <- primitiveTypeToken
     h <- stmts
-    i <- endFunToken
-    j <- semicolonToken
-    return (a:b:c:d ++ [e] ++ (f:g:h) ++ (i:j:[]))
+    i <- returnStatement
+    j <- endFunToken
+    k <- semicolonToken
+    return (a:b:c:d ++ [e] ++ (f:g:h) ++ i ++ (j:k:[]))
+
+returnStatement :: Parsec [Token] st [Token]
+returnStatement = (do
+        a <- keywordToken "return"
+        b <- idToken <|> floatToken <|> intToken
+        c <- semicolonToken
+        return (a:b:[c])) <|> (return [])
+
 
 arguments :: Parsec [Token] st [Token]
-arguments = do
+arguments = (do
         a <- primitiveTypeToken
         b <- idToken
         c <- remainingArguments
-        return (a:b:c) <|> (return [])
+        return (a:b:c)) <|> (return [])
 
 remainingArguments :: Parsec [Token] st [Token]
 remainingArguments = (do
