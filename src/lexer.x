@@ -19,25 +19,25 @@ tokens :-
   \"+($alpha|$digit|$whitespace|$blockBegin|$blockEnd|$op|$stringCommas)+\"  { \p -> String p }
   $white+                                      ;
   "--".*                                       ;
-  "Let"                                        { \p -> Let  } 
-  "Ghbc"                                       { \p -> Ghbc }
-  "="                                          { \p -> Assign }
-  ";"                                          { \p -> Semicolon }
-  ":"                                          { \p -> Colon }
-  "fun"                                        { \p -> Fun }
-  "endfun"                                     { \p -> Endfun }
-  (\( | \[ | \{)                               { \p -> BlockBegin p} 
-  (\) | \] | \})                               { \p -> BlockEnd p} 
-  (\=+\=|\>+\=|\<+\=|\>|\<)                    { \p -> ComparativeOp p}
-  (\&+\&|\|+\||\!)                             { \p -> LogicalOp p}
-  $op                                          { \p -> Op (head p) } 
-  \-$digit+|$digit+                            { \p -> Int (read p) }
-  $digit+\.$digit+                             { \p -> Float (read p) }
-  (true|false)                                 { \p -> Boolean p }
-  (int|float|string|array|boolean|matrix)      { \p -> PrimitiveType p}
-  (if|else|for|continue|break|while|const|var) { \p -> Keyword p}
-  (\, | \" | \')                               { \p -> Comma p}        
-  $alpha+                                      { \p -> Name p }
+  "Let"                                               { \p -> Let  } 
+  "Ghbc"                                              { \p -> Ghbc }
+  "="                                                 { \p -> Assign }
+  ";"                                                 { \p -> Semicolon }
+  ":"                                                 { \p -> Colon }
+  "fun"                                               { \p -> Fun }
+  "endfun"                                            { \p -> Endfun }
+  (\( | \[ | \{)                                      { \p -> BlockBegin p} 
+  (\) | \] | \})                                      { \p -> BlockEnd p} 
+  (\=+\=|\>+\=|\<+\=|\>|\<)                           { \p -> ComparativeOp p}
+  (\&+\&|\|+\||\!)                                    { \p -> LogicalOp p}
+  $op                                                 { \p -> Op (head p) } 
+  \-$digit+|$digit+                                   { \p -> Int (read p) }
+  $digit+\.$digit+                                    { \p -> Float (read p) }
+  (true|false)                                        { \p -> Boolean p }
+  (int|float|string|array|boolean|matrix)             { \p -> PrimitiveType p}
+  (if|else|for|continue|break|while|const|var|return) { \p -> Keyword p}
+  (\, | \" | \')                                      { \p -> Comma p}        
+  $alpha+                                             { \p -> Name p }
 
 {
 
