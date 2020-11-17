@@ -1,5 +1,6 @@
 module Memory where      
 
+import Lexer
 -- Definição do array
 -- Seja uma matriz identidade 2x2, sua representação será:
 -- MyArray [(MyInt 1,[0,0]),(MyInt 0,[0,1]),(MyInt 0,[1,0]),(MyInt 1,[1,1])] "nomeDaVariavel" "escopo" [2,2]
@@ -16,6 +17,10 @@ data Typex = MyInt Int       |
 data Type = MyType Typex String String                   |
             MyArray [(Typex, [Int])] String String [Int]
             deriving (Show)
+
+symtableInsertMany :: [Type] -> [Type] -> [Type]
+symtableInsertMany []     a = a
+symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
@@ -40,6 +45,9 @@ symtableDelete es1 ((MyType typex id2 es2):t) =
 symtableDelete es1 ((MyArray a id es2 s):t) =
                             if es1 == es2 then symtableDelete es1 t
                             else (MyArray a id es2 s) : symtableDelete es1 t
+
+fromToken :: Token -> String -> String -> Type
+fromToken (Lexer.Int a) nome escopo = MyType (MyInt a) nome escopo
 
 -- TODO::adicionar o token 'function' no lexer.x, criar no arquivo token.hs o Token em si, 
 --       criar no stmts.hs a estrutura da função.

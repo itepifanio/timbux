@@ -6,8 +6,9 @@ import Memory
 import Statement
 import Text.Parsec
 import Data.Functor.Identity
+import System.IO.Unsafe
 
-program :: ParsecT [Token] [Type] Identity [Token]
+program :: ParsecT [Token] [Type] IO [Token]
 program = do
         a <- beginToken 
         b <- idToken -- nome do programa
@@ -15,17 +16,17 @@ program = do
         eof
         return ([a] ++ [b] ++ c)
 
-endProgram :: ParsecT [Token] st Identity [Token]
+endProgram :: ParsecT [Token] [Type] IO [Token]
 endProgram = do
            a <- endToken
            eof
            return ([a]) 
 
-parser :: [Token] -> Either ParseError [Token]
-parser tokens = runParser program [] "Error message" tokens
+parser :: [Token] -> IO (Either ParseError [Token])
+parser tokens = runParserT program [] "Error message" tokens
 
 main :: IO ()
-main = case parser (getTokens "./program/programv0.pe") of
+main = case unsafePerformIO (parser (getTokens "./program/programv0.pe")) of
             { Left err -> print err; 
               Right ans -> print ans
             }
