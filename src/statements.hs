@@ -97,7 +97,7 @@ instAssign = do
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
         --   updateState (symtableInsert (MyArray [(MyInt 1, [1])] "a" "escopo" [1]))
-          updateState (symtableInsert (fromToken (d!!0) "" ""))
+          updateState (symtableInsertMany (map (\x -> fromToken x "" "") d)) -- TODO::recuperar escopo
           s <- getState
           liftIO (print s)
           return (a:b:c:d ++ [e])
