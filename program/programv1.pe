@@ -1,4 +1,7 @@
 Let crossProduct
-    string a = "estou intrigado";
-    a = "hue";
+    string a = 1;
+    string b = 2;
+    fun sum (int a, int b) : int
+      int c = a + b;
+	endfun;
 Ghbc

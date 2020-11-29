@@ -96,10 +96,10 @@ instAssign = do
           c <- assignToken
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
-        --   updateState (symtableInsert (MyArray [(MyInt 1, [1])] "a" "escopo" [1]))
-          updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
-          s <- getState
-          liftIO (print s)
+          s1 <- getState
+          updateState (symtableInsert (fromToken d (getVariableName b) (lookupScope s1)))
+          s2 <- getState
+          liftIO (print s2)
           return (a:b:c:d ++ [e])
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
@@ -108,9 +108,10 @@ justAssign = do
           b <- assignToken
           c <- operation <|> singletonToken <|> array
           d <- semicolonToken
-          updateState (symtableUpdate (fromToken c (getVariableName a) "")) -- TODO::recuperar escopo
-          s <- getState
-          liftIO (print s)
+          s1 <- getState
+          updateState (symtableUpdate (fromToken c (getVariableName a) (lookupScope s1)))
+          s2 <- getState
+          liftIO (print s2)
           return (a:b:c ++ [d])
 
 operation :: ParsecT [Token] [Type] IO [Token]
@@ -151,6 +152,9 @@ arguments :: ParsecT [Token] [Type] IO [Token]
 arguments = (do
         a <- primitiveTypeToken
         b <- idToken
+        updateState (symtableInsert (fromToken [b] (getVariableName b) (getVariableName b)))
+        s <- getState
+        liftIO (print s)
         c <- remainingArguments
         return (a:b:c)) <|> (return [])
 

@@ -18,6 +18,10 @@ data Type = MyType Typex String String                   |
             MyArray [(Typex, [Int])] String String [Int]
             deriving (Show)
 
+-- lookupScope :: [Type] -> String
+lookupScope [] = ""
+lookupScope ts = getScope $ last ts
+
 symtableInsertMany :: [Type] -> [Type] -> [Type]
 symtableInsertMany []     a = a
 symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
@@ -61,7 +65,7 @@ fromTokenX :: Token -> String -> String -> Type
 fromTokenX (Lexer.Int  a)   nome escopo = MyType (MyInt a)    nome escopo
 fromTokenX (Lexer.Name a)   nome escopo = MyType (MyString a) nome escopo
 fromTokenX (Lexer.Float a)  nome escopo = MyType (MyFloat a)  nome escopo
-fromTokenX (Lexer.String a) nome escopo = MyType (MyString a)  nome escopo
+fromTokenX (Lexer.String a) nome escopo = MyType (MyString a) nome escopo
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -77,6 +81,10 @@ convertTypeTokensToArray (t:ts) nome escopo i
     | otherwise = [((fromTypeToTypex $ fromTokenX t nome escopo), [i])] ++ (convertTypeTokensToArray ts nome escopo (i+1))
 
 -- TODO::mover as funções abaixo para um novo arquivo posteriormente
+
+getScope :: Type -> String
+getScope (MyType _ _ e)    = e
+getScope (MyArray _ _ e _) = e
 
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
