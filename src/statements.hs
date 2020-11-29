@@ -138,7 +138,8 @@ function = do
     i <- returnStatement
     j <- endFunToken
     k <- semicolonToken
-    return (a:b:c:d ++ [e] ++ (f:g:h) ++ i ++ (j:k:[]))
+    l <- returnStatement
+    return (a:b:c:d ++ [e] ++ (f:g:h) ++ i ++ (j:k:[])++l )
 
 returnStatement :: ParsecT [Token] [Type] IO [Token]
 returnStatement = (do
