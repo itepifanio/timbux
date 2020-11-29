@@ -10,7 +10,7 @@ import Lexer
 -- MyType (MyInt 1) "nomeDaVariavel" "escopo"
 
 data Typex = MyInt Int       |
-             MyFloat Float   |
+             MyFloat Double  |
              MyString String 
              deriving (Show)
                    
@@ -21,6 +21,10 @@ data Type = MyType Typex String String                   |
 symtableInsertMany :: [Type] -> [Type] -> [Type]
 symtableInsertMany []     a = a
 symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
+
+symtableUpdateMany :: [Type] -> [Type] -> [Type]
+symtableUpdateMany []     a = a
+symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableUpdate x a)
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
@@ -46,8 +50,45 @@ symtableDelete es1 ((MyArray a id es2 s):t) =
                             if es1 == es2 then symtableDelete es1 t
                             else (MyArray a id es2 s) : symtableDelete es1 t
 
-fromToken :: Token -> String -> String -> Type
-fromToken (Lexer.Int a) nome escopo = MyType (MyInt a) nome escopo
+""" TODO::Da forma que tá aqui tratamos tipos simples e arrays, mas operações (exemplo 1+2+3*4) não
+são tratadas. É preciso verificar se xs != []: Se o token é um bracket chamar convertArrayStmtsToMyArray
+caso contrário tratar as operações (talvez seja preciso mudar a tipagem final para [Type]).
+"""
+fromToken :: [Token] -> String -> String -> Type
+fromToken (x:xs) nome escopo = 
+    if xs == [] then fromTokenX x nome escopo          -- Modifica tipos simples: Int, String, Float
+    else convertArrayStmtsToMyArray (x:xs) nome escopo -- Pega os tokens e volta o MyArray
+
+fromTokenX :: Token -> String -> String -> Type
+fromTokenX (Lexer.Int  a)  nome escopo = MyType (MyInt a)    nome escopo
+fromTokenX (Lexer.Name a)  nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.Float a) nome escopo = MyType (MyFloat a)  nome escopo
+
+convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
+convertArrayStmtsToMyArray (x:xs) nome escopo = 
+    MyArray arrayDeTuplasTypexInt nome escopo [(snd (last arrayDeTuplasTypexInt) !! 0) + 1, 1] -- Fixado arrays unidimencionais por enquanto
+    where arrayDeTuplasTypexInt = (convertTypeTokensToArray (x:xs) nome escopo 0)
+
+convertTypeTokensToArray :: [Token] -> String -> String -> Int -> [(Typex, [Int])]
+convertTypeTokensToArray [] nome escopo i = []
+convertTypeTokensToArray (t:ts) nome escopo i
+    | isBracketToken(t) || isCommaToken(t) = convertTypeTokensToArray ts nome escopo i --ignora os tokens de comma e blockbegin, blockend
+    | otherwise = [((fromTypeToTypex $ fromTokenX t nome escopo), [i])] ++ (convertTypeTokensToArray ts nome escopo (i+1))
+
+getVariableName :: Token -> String
+getVariableName (Lexer.Name n) = n
+
+isBracketToken :: Token -> Bool
+isBracketToken (Lexer.BlockBegin _) = True
+isBracketToken (Lexer.BlockEnd   _) = True
+isBracketToken _                    = False
+
+isCommaToken :: Token -> Bool
+isCommaToken (Lexer.Comma _) = True
+isCommaToken _               = False
+
+fromTypeToTypex :: Type -> Typex
+fromTypeToTypex (MyType t _ _) = t
 
 -- TODO::adicionar o token 'function' no lexer.x, criar no arquivo token.hs o Token em si, 
 --       criar no stmts.hs a estrutura da função.

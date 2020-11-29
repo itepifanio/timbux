@@ -20,7 +20,7 @@ endProgram :: ParsecT [Token] [Type] IO [Token]
 endProgram = do
            a <- endToken
            eof
-           return ([a]) 
+           return ([a])
 
 parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens

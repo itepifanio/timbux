@@ -58,7 +58,7 @@ booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
     get_token _           = Nothing
 
--- array :: Parsec [Token] st [Token]
+array :: ParsecT [Token] u IO [Token]
 array = do
           open <- blockBeginToken "["
           values <- digitSequence <|> arraySequence
