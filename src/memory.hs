@@ -35,11 +35,13 @@ symtableUpdate _ [] = fail "Not found"
 symtableUpdate (MyType a id1 es1) ((MyType b id2 es2):t) =
                             if id1 == id2 && es1 == es2 then ((MyType a id1 es1) : t)
                             else (MyType b id2 es2) : symtableUpdate (MyType a id1 es1) t
-symtableUpdate (MyType a id1 es1) ((MyArray _ _ _ _):t) = symtableUpdate (MyType a id1 es1) t
+
+symtableUpdate (MyType a id1 es1) ((MyArray b id2 es2 d):t) = (MyArray b id2 es2 d) : symtableUpdate (MyType a id1 es1) t
 symtableUpdate (MyArray a id1 es1 b) ((MyArray c id2 es2 d):t) =
                             if id1 == id2 && es1 == es2 then ((MyArray a id1 es1 b) : t)
                             else (MyArray c id2 es2 d) : symtableUpdate (MyArray a id1 es1 b) t
-symtableUpdate (MyArray a id1 es1 b) ((MyType _ _ _):t) = symtableUpdate (MyArray a id1 es1 b) t
+
+symtableUpdate (MyArray a id1 es1 b) ((MyType c id2 es2 ):t) = (MyType c id2 es2 ) : symtableUpdate (MyArray a id1 es1 b) t
 
 symtableDelete :: String -> [Type] -> [Type]
 symtableDelete _ [] = []
@@ -50,10 +52,6 @@ symtableDelete es1 ((MyArray a id es2 s):t) =
                             if es1 == es2 then symtableDelete es1 t
                             else (MyArray a id es2 s) : symtableDelete es1 t
 
-""" TODO::Da forma que tá aqui tratamos tipos simples e arrays, mas operações (exemplo 1+2+3*4) não
-são tratadas. É preciso verificar se xs != []: Se o token é um bracket chamar convertArrayStmtsToMyArray
-caso contrário tratar as operações (talvez seja preciso mudar a tipagem final para [Type]).
-"""
 fromToken :: [Token] -> String -> String -> Type
 fromToken (x:xs) nome escopo = 
     if xs == [] then fromTokenX x nome escopo          -- Modifica tipos simples: Int, String, Float

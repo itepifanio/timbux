@@ -1,0 +1,7 @@
+Inserindo array na tabela de símbolos
+(symtableInsert (MyArray [((MyInt 1), [0])] "b" "e" [0]) [])
+
+
+Verificar o update em uma tabela de símbolos com MyType e MyArray
+symtableUpdate (MyType (MyInt 10) "a" "e") (symtableInsert (MyType (MyInt 1) "a" "e") (symtableInsert (MyArray [((MyInt 1), [0])] "b" "e" [0]) []))
+
