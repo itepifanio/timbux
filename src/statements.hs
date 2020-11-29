@@ -97,7 +97,7 @@ instAssign = do
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
         --   updateState (symtableInsert (MyArray [(MyInt 1, [1])] "a" "escopo" [1]))
-          updateState (symtableInsertMany (map (\x -> fromToken x "" "") d)) -- TODO::recuperar escopo
+          updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
           s <- getState
           liftIO (print s)
           return (a:b:c:d ++ [e])
@@ -108,6 +108,9 @@ justAssign = do
           b <- assignToken
           c <- operation <|> singletonToken <|> array
           d <- semicolonToken
+          updateState (symtableUpdate (fromToken c (getVariableName a) "")) -- TODO::recuperar escopo
+          s <- getState
+          liftIO (print s)
           return (a:b:c ++ [d])
 
 operation :: ParsecT [Token] [Type] IO [Token]
