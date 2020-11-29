@@ -135,6 +135,8 @@ function = do
     e <- blockEndToken ")"
     f <- colonToken
     g <- primitiveTypeToken
+    updateState (symtableInsertMany $ (map (\x -> fromTokenX x (getVariableName x) (getVariableName b)) (filter isIdToken d)))
+    -- s <- getState
     h <- stmts
     i <- returnStatement
     j <- endFunToken
@@ -152,9 +154,6 @@ arguments :: ParsecT [Token] [Type] IO [Token]
 arguments = (do
         a <- primitiveTypeToken
         b <- idToken
-        updateState (symtableInsert (fromToken [b] (getVariableName b) (getVariableName b)))
-        s <- getState
-        liftIO (print s)
         c <- remainingArguments
         return (a:b:c)) <|> (return [])
 

@@ -65,7 +65,7 @@ fromTokenX :: Token -> String -> String -> Type
 fromTokenX (Lexer.Int  a)   nome escopo = MyType (MyInt a)    nome escopo
 fromTokenX (Lexer.Name a)   nome escopo = MyType (MyString a) nome escopo
 fromTokenX (Lexer.Float a)  nome escopo = MyType (MyFloat a)  nome escopo
-fromTokenX (Lexer.String a) nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.String a) nome escopo = MyType (MyString a)  nome escopo
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -97,6 +97,10 @@ isBracketToken _                    = False
 isCommaToken :: Token -> Bool
 isCommaToken (Lexer.Comma _) = True
 isCommaToken _               = False
+
+isIdToken :: Token -> Bool
+isIdToken (Lexer.Name _)  = True
+isIdToken _               = False
 
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t

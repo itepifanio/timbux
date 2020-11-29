@@ -1,7 +1,7 @@
 Let crossProduct
     string a = 1;
     string b = 2;
-    fun sum (int a, int b) : int
-      int c = a + b;
+    fun soma (int a, int b) : int
+      int c = 3;
 	endfun;
 Ghbc
