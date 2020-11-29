@@ -35,12 +35,10 @@ symtableUpdate _ [] = fail "Not found"
 symtableUpdate (MyType a id1 es1) ((MyType b id2 es2):t) =
                             if id1 == id2 && es1 == es2 then ((MyType a id1 es1) : t)
                             else (MyType b id2 es2) : symtableUpdate (MyType a id1 es1) t
-
 symtableUpdate (MyType a id1 es1) ((MyArray b id2 es2 d):t) = (MyArray b id2 es2 d) : symtableUpdate (MyType a id1 es1) t
 symtableUpdate (MyArray a id1 es1 b) ((MyArray c id2 es2 d):t) =
                             if id1 == id2 && es1 == es2 then ((MyArray a id1 es1 b) : t)
                             else (MyArray c id2 es2 d) : symtableUpdate (MyArray a id1 es1 b) t
-
 symtableUpdate (MyArray a id1 es1 b) ((MyType c id2 es2 ):t) = (MyType c id2 es2 ) : symtableUpdate (MyArray a id1 es1 b) t
 
 symtableDelete :: String -> [Type] -> [Type]
@@ -52,26 +50,33 @@ symtableDelete es1 ((MyArray a id es2 s):t) =
                             if es1 == es2 then symtableDelete es1 t
                             else (MyArray a id es2 s) : symtableDelete es1 t
 
+-- Converte um array de tokens em nosso datatype Type
 fromToken :: [Token] -> String -> String -> Type
-fromToken (x:xs) nome escopo = 
-    if xs == [] then fromTokenX x nome escopo          -- Modifica tipos simples: Int, String, Float
-    else convertArrayStmtsToMyArray (x:xs) nome escopo -- Pega os tokens e volta o MyArray
+fromToken (x:xs) nome escopo
+    | xs == []         = fromTokenX x nome escopo               -- Modifica tipos simples: Int, String, Float
+    | otherwise = convertArrayStmtsToMyArray (x:xs) nome escopo -- Pega os tokens e volta o MyArray
 
+-- Converte um token em um datatype Type sem ser o array
 fromTokenX :: Token -> String -> String -> Type
-fromTokenX (Lexer.Int  a)  nome escopo = MyType (MyInt a)    nome escopo
-fromTokenX (Lexer.Name a)  nome escopo = MyType (MyString a) nome escopo
-fromTokenX (Lexer.Float a) nome escopo = MyType (MyFloat a)  nome escopo
+fromTokenX (Lexer.Int  a)   nome escopo = MyType (MyInt a)    nome escopo
+fromTokenX (Lexer.Name a)   nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.Float a)  nome escopo = MyType (MyFloat a)  nome escopo
+fromTokenX (Lexer.String a) nome escopo = MyType (MyString a)  nome escopo
 
+-- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
 convertArrayStmtsToMyArray (x:xs) nome escopo = 
     MyArray arrayDeTuplasTypexInt nome escopo [(snd (last arrayDeTuplasTypexInt) !! 0) + 1, 1] -- Fixado arrays unidimencionais por enquanto
     where arrayDeTuplasTypexInt = (convertTypeTokensToArray (x:xs) nome escopo 0)
 
+-- Função auxiliar que converte o datatype para MyArray
 convertTypeTokensToArray :: [Token] -> String -> String -> Int -> [(Typex, [Int])]
 convertTypeTokensToArray [] nome escopo i = []
 convertTypeTokensToArray (t:ts) nome escopo i
     | isBracketToken(t) || isCommaToken(t) = convertTypeTokensToArray ts nome escopo i --ignora os tokens de comma e blockbegin, blockend
     | otherwise = [((fromTypeToTypex $ fromTokenX t nome escopo), [i])] ++ (convertTypeTokensToArray ts nome escopo (i+1))
+
+-- TODO::mover as funções abaixo para um novo arquivo posteriormente
 
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n

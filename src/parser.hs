@@ -26,7 +26,7 @@ parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens
 
 main :: IO ()
-main = case unsafePerformIO (parser (getTokens "./program/programv0.pe")) of
+main = case unsafePerformIO (parser (getTokens "./program/programv1.pe")) of
             { Left err -> print err; 
               Right ans -> print ans
             }
