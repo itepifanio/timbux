@@ -74,10 +74,6 @@ forStatement = do
     m <- stmts
     n <- keywordToken "endfor"
     return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n]))
-    -- m <- blockBeginToken "{"
-    -- n <- stmts
-    -- o <- blockEndToken  "}"
-    -- return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m:n ++ [o]))
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
