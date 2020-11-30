@@ -96,8 +96,8 @@ instAssign = do
           c <- assignToken
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
-        --   updateState (symtableInsert (MyArray [(MyInt 1, [1])] "a" "escopo" [1]))
-          updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
+          if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
+          else fail "Type don't match with type of variable"
           s <- getState
           liftIO (print s)
           return (a:b:c:d ++ [e])
@@ -160,3 +160,18 @@ remainingArguments = (do
     b <- arguments
     return (a:b)) <|> (return [])
 
+retornarLexerTipo :: Token -> String 
+retornarLexerTipo (Lexer.Int  a)   = "int"
+retornarLexerTipo (Lexer.Float a)  = "float"
+retornarLexerTipo (Lexer.String a) = "string"
+
+retornarPrimitiveType :: Token -> String
+retornarPrimitiveType (PrimitiveType "int") = "int"
+retornarPrimitiveType (PrimitiveType "float") = "float"
+retornarPrimitiveType (PrimitiveType "string") = "string"
+
+validarTipo :: Token -> [Token] -> Bool
+validarTipo t (x:xs) = 
+                if retornarPrimitiveType t == retornarLexerTipo x then True
+                else if (retornarPrimitiveType t == "float") && (retornarLexerTipo x == "int") then True
+                else False
