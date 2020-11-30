@@ -92,10 +92,11 @@ instAssign = do
           c <- assignToken
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
-          if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
+          s1 <- getState
+          if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
           else fail "Type don't match with type of variable"
-          s <- getState
-          liftIO (print s)
+          s2 <- getState
+          liftIO (print s2)
           return (a:b:c:d ++ [e])
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
@@ -104,9 +105,10 @@ justAssign = do
           b <- assignToken
           c <- operation <|> singletonToken <|> array
           d <- semicolonToken
-          updateState (symtableUpdate (fromToken c (getVariableName a) "")) -- TODO::recuperar escopo
-          s <- getState
-          liftIO (print s)
+          s1 <- getState
+          updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+          s2 <- getState
+          liftIO (print s2)
           return (a:b:c ++ [d])
 
 operation :: ParsecT [Token] [Type] IO [Token]
@@ -130,8 +132,12 @@ function = do
     e <- blockEndToken ")"
     f <- colonToken
     g <- primitiveTypeToken
+    updateState (symtableInsertMany $ (map (\x -> fromTokenX x (getVariableName x) (getVariableName b)) (filter isIdToken d)))
     h <- stmts
     i <- returnStatement
+    s <- getState
+    -- precisamos forçar o return na function. Aqui pegamos a variavel retornada e mudamos o valor dela na tabela de símbolos.
+    updateState (symtableInsert $ fromToken [i!!1] (getVariableName (i!!1)) (lookupLastScopeFrom (getVariableName b) s))
     j <- endFunToken
     k <- semicolonToken
     return (a:b:c:d ++ [e] ++ (f:g:h) ++ i ++ (j:k:[]))
@@ -139,7 +145,7 @@ function = do
 returnStatement :: ParsecT [Token] [Type] IO [Token]
 returnStatement = (do
         a <- keywordToken "return"
-        b <- idToken <|> floatToken <|> intToken
+        b <- idToken -- <|> floatToken <|> intToken -- TODO::Por enquanto só permite retornar uma coisa: return var;
         c <- semicolonToken
         return (a:b:[c])) <|> (return [])
 

@@ -18,6 +18,15 @@ data Type = MyType Typex String String                   |
             MyArray [(Typex, [Int])] String String [Int]
             deriving (Show)
 
+-- lookupScope :: [Type] -> String
+lookupLastScope [] = ""
+lookupLastScope ts = getScope $ last ts
+
+lookupLastScopeFrom _      []    = ""
+lookupLastScopeFrom string (t:ts) = 
+    if getScope t == string then lookupLastScopeFrom string ts
+    else getScope t
+
 symtableInsertMany :: [Type] -> [Type] -> [Type]
 symtableInsertMany []     a = a
 symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
@@ -58,10 +67,10 @@ fromToken (x:xs) nome escopo
 
 -- Converte um token em um datatype Type sem ser o array
 fromTokenX :: Token -> String -> String -> Type
-fromTokenX (Lexer.Int  a)   nome escopo = MyType (MyInt a)    nome escopo
-fromTokenX (Lexer.Name a)   nome escopo = MyType (MyString a) nome escopo
-fromTokenX (Lexer.Float a)  nome escopo = MyType (MyFloat a)  nome escopo
-fromTokenX (Lexer.String a) nome escopo = MyType (MyString a)  nome escopo
+fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)    nome escopo
+fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)  nome escopo
+fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a) nome escopo
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -78,6 +87,10 @@ convertTypeTokensToArray (t:ts) nome escopo i
 
 -- TODO::mover as funções abaixo para um novo arquivo posteriormente
 
+getScope :: Type -> String
+getScope (MyType _ _ e)    = e
+getScope (MyArray _ _ e _) = e
+
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
 
@@ -90,11 +103,14 @@ isCommaToken :: Token -> Bool
 isCommaToken (Lexer.Comma _) = True
 isCommaToken _               = False
 
+isIdToken :: Token -> Bool
+isIdToken (Lexer.Name _)  = True
+isIdToken _               = False
+
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
 
--- TODO::adicionar o token 'function' no lexer.x, criar no arquivo token.hs o Token em si, 
---       criar no stmts.hs a estrutura da função.
+
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 
 -- Exemplo de uso do symtableUpdate atualizando o MyType para 2
