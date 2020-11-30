@@ -25,21 +25,20 @@ endProgram = do
            eof
            return ([a])
 
-generalStatement :: String -> ParsecT [Token] [Type] IO([Token])
-generalStatement stmt = do
+generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
+generalStatement stmt endstmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
     c <- idToken <|> floatToken <|> intToken
     d <- comparativeOpToken
     e <- idToken <|> floatToken <|> intToken
     f <- blockEndToken    ")"
-    g <- blockBeginToken "{"
-    h <- stmts
-    i <- blockEndToken   "}"
-    return (a:b:c:d:e:f:g:h ++ [i])
+    g <- stmts
+    h <- keywordToken endstmt
+    return (a:b:c:d:e:f:g++[h])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
-whileStatement = generalStatement "while"
+whileStatement = generalStatement "while" "endwhile"
 
 ifStatement :: ParsecT [Token] [Type] IO([Token])
 ifStatement = do
@@ -47,16 +46,14 @@ ifStatement = do
               return a
 
 onlyIfStatement :: ParsecT [Token] [Type] IO([Token])
-onlyIfStatement = generalStatement "if"
+onlyIfStatement = generalStatement "if" "endif"
 
 ifElseStatement :: ParsecT [Token] [Type] IO([Token])
 ifElseStatement = do
-    a <- onlyIfStatement
-    b <- keywordToken "else"
-    c <- blockBeginToken "{"
-    d <- stmts
-    e <- blockEndToken "}"
-    return (a ++ b:c:d ++ [e])
+    a <- generalStatement "if" "else"
+    b <- stmts
+    c <- keywordToken "endif"
+    return (a ++ b++[c])
 
 logicStatement :: ParsecT [Token] [Type] IO([Token])
 logicStatement = do
@@ -74,10 +71,9 @@ forStatement = do
     e <- semicolonToken
     f <- logicStatement
     l <- blockEndToken  ")"
-    m <- blockBeginToken "{"
-    n <- stmts
-    o <- blockEndToken  "}"
-    return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m:n ++ [o]))
+    m <- stmts
+    n <- keywordToken "endfor"
+    return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n]))
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
