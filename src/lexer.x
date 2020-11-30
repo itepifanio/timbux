@@ -26,6 +26,9 @@ tokens :-
   ":"                                                 { \p -> Colon }
   "fun"                                               { \p -> Fun }
   "endfun"                                            { \p -> Endfun }
+  "+"                                                 { \p -> Add }
+  "-"                                                 { \p -> Sub }
+  "*"                                                 { \p -> Mult }
   (\( | \[ | \{)                                      { \p -> BlockBegin p} 
   (\) | \] | \})                                      { \p -> BlockEnd p} 
   (\=+\=|\>+\=|\<+\=|\>|\<)                           { \p -> ComparativeOp p}
@@ -67,7 +70,10 @@ data Token =
     Keyword         String  |
     ComparativeOp   String  |
     String          String  |
-    LogicalOp       String 
+    LogicalOp       String  |
+    Add                     |
+    Sub                     |
+    Mult                    
     deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)

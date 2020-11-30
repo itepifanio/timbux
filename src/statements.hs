@@ -108,6 +108,9 @@ justAssign = do
           b <- assignToken
           c <- operation <|> singletonToken <|> array
           d <- semicolonToken
+          -- pegar o Type z de a dentro da symtable
+          -- converter o Type z para tipo lexer q 
+          -- comparar se o tipo q bate com o tipo lexer que o usuário quer adicionar
           updateState (symtableUpdate (fromToken c (getVariableName a) "")) -- TODO::recuperar escopo
           s <- getState
           liftIO (print s)
