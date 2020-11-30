@@ -3,22 +3,37 @@ module Evaluation where
 import Lexer
 import Token
 import Text.Parsec
+import Memory
 
-bin_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
+-- funções para o avaliador de expressões
+
+expression :: ParsecT [Token] [Type] IO(Token) -- antes era [(Token,Token)]
+expression = try bin_expression <|> una_expression
+
+una_expression :: ParsecT [Token] [Type] IO(Token)
+una_expression = do
+                   op <- addToken <|> subToken <|> multToken
+                   a <- intToken <|> floatToken 
+                   return (a)
+
+bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken    -- aqui adicionar pra receber qualquer tipo
+                   n1 <- intToken <|> floatToken    -- aqui pensar em como fica pra array
                    result <- eval_remaining n1
                    return (result)
 
-eval_remaining :: Token -> ParsecT [Token] [(Token,Token)] IO(Token)
+eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
 eval_remaining n1 = do
-                      op <- opToken
-                      n2 <- intToken <|> floatToken   -- aqui adicionar pra receber qualquer tipo
+                      op <- addToken <|> subToken <|> multToken
+                      n2 <- intToken <|> floatToken   -- aqui pensar em como fica pra array
                       result <- eval_remaining (eval n1 op n2)
                       return (result) 
                     <|> return (n1)     
 
-eval :: Token -> Token -> Token -> Token -- aqui adicionar pra receber qualquer tipo
+eval :: Token -> Token -> Token -> Token -- aqui pensar em como fica pra array
 eval (Int x) (Add) (Int y) = Int (x + y)
 eval (Int x) (Sub) (Int y) = Int (x - y)
 eval (Int x) (Mult) (Int y) = Int (x * y)
+eval (Float x) (Add) (Float y) = Float (x + y)
+eval (Float x) (Sub) (Float y) = Float (x - y)
+eval (Float x) (Mult) (Float y) = Float (x * y)

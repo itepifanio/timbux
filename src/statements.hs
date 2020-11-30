@@ -4,6 +4,7 @@ import Lexer
 import Token
 import Text.Parsec
 import Memory
+import Evaluation
 import Data.Functor.Identity
 
 import Control.Monad.IO.Class
@@ -81,7 +82,7 @@ forStatement = do
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
-            a <- intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
+            a <- expression <|> intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
             return([a])
 
 assign :: ParsecT [Token] [Type] IO([Token])
@@ -94,7 +95,7 @@ instAssign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- operation <|> singletonToken <|> array
+          d <- singletonToken <|> array
           e <- semicolonToken
           if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) "")) -- TODO::recuperar escopo
           else fail "Type don't match with type of variable"
@@ -106,7 +107,7 @@ justAssign :: ParsecT [Token] [Type] IO [Token]
 justAssign = do
           a <- idToken
           b <- assignToken
-          c <- operation <|> singletonToken <|> array
+          c <- singletonToken <|> array
           d <- semicolonToken
           -- pegar o Type z de a dentro da symtable
           -- converter o Type z para tipo lexer q 
@@ -116,17 +117,17 @@ justAssign = do
           liftIO (print s)
           return (a:b:c ++ [d])
 
-operation :: ParsecT [Token] [Type] IO [Token]
-operation = do
-    a <- singletonToken <|> array
-    b <- remaining_operations
-    return (a ++ b) <|> (return []) 
+-- operation :: ParsecT [Token] [Type] IO [Token]
+-- operation = do
+--     a <- singletonToken <|> array
+--     b <- remaining_operations
+--     return (a ++ b) <|> (return []) 
 
-remaining_operations :: ParsecT [Token] [Type] IO [Token]
-remaining_operations = (do
-    a <- opToken
-    b <- operation
-    return (a:b)) <|> (return [])
+-- remaining_operations :: ParsecT [Token] [Type] IO [Token]
+-- remaining_operations = (do
+--     a <- opToken
+--     b <- operation
+--     return (a:b)) <|> (return [])
 
 function :: ParsecT [Token] [Type] IO [Token]
 function = do

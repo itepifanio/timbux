@@ -33,7 +33,6 @@ tokens :-
   (\) | \] | \})                                      { \p -> BlockEnd p} 
   (\=+\=|\>+\=|\<+\=|\>|\<)                           { \p -> ComparativeOp p}
   (\&+\&|\|+\||\!)                                    { \p -> LogicalOp p}
-  $op                                                 { \p -> Op (head p) } 
   \-$digit+|$digit+                                   { \p -> Int (read p) }
   $digit+\.$digit+                                    { \p -> Float (read p) }
   (true|false)                                        { \p -> Boolean p }
@@ -45,7 +44,6 @@ tokens :-
 {
 
 data Token =
-    Op              Char    |
     Comma           String  |
     Int             Int     |
     Name            String  |
