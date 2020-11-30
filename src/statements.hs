@@ -97,7 +97,7 @@ instAssign = do
           d <- operation <|> singletonToken <|> array
           e <- semicolonToken
           s1 <- getState
-          updateState (symtableInsert (fromToken d (getVariableName b) (lookupScope s1)))
+          updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
           s2 <- getState
           liftIO (print s2)
           return (a:b:c:d ++ [e])
@@ -109,7 +109,7 @@ justAssign = do
           c <- operation <|> singletonToken <|> array
           d <- semicolonToken
           s1 <- getState
-          updateState (symtableUpdate (fromToken c (getVariableName a) (lookupScope s1)))
+          updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           s2 <- getState
           liftIO (print s2)
           return (a:b:c ++ [d])
@@ -136,9 +136,11 @@ function = do
     f <- colonToken
     g <- primitiveTypeToken
     updateState (symtableInsertMany $ (map (\x -> fromTokenX x (getVariableName x) (getVariableName b)) (filter isIdToken d)))
-    -- s <- getState
     h <- stmts
     i <- returnStatement
+    s <- getState
+    -- precisamos forçar o return na function. Aqui pegamos a variavel retornada e mudamos o valor dela na tabela de símbolos.
+    updateState (symtableInsert $ fromToken [i!!1] (getVariableName (i!!1)) (lookupLastScopeFrom (getVariableName b) s))
     j <- endFunToken
     k <- semicolonToken
     return (a:b:c:d ++ [e] ++ (f:g:h) ++ i ++ (j:k:[]))
@@ -146,7 +148,7 @@ function = do
 returnStatement :: ParsecT [Token] [Type] IO [Token]
 returnStatement = (do
         a <- keywordToken "return"
-        b <- idToken <|> floatToken <|> intToken
+        b <- idToken -- <|> floatToken <|> intToken -- TODO::Por enquanto só permite retornar uma coisa: return var;
         c <- semicolonToken
         return (a:b:[c])) <|> (return [])
 

@@ -3,5 +3,7 @@ Let crossProduct
     string b = 2;
     fun soma (int a, int b) : int
       int c = 3;
-	endfun;
+      return c;
+	  endfun;
+    int d = 3;
 Ghbc
