@@ -13,19 +13,19 @@ expression = try bin_expression <|> una_expression
 una_expression :: ParsecT [Token] [Type] IO(Token)
 una_expression = do
                    op <- addToken <|> subToken <|> multToken
-                   a <- intToken <|> floatToken 
+                   a <- intToken <|> floatToken <|> stringToken
                    return (a)
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken    -- aqui pensar em como fica pra array
+                   n1 <- intToken <|> floatToken <|> stringToken   -- aqui pensar em como fica pra array
                    result <- eval_remaining n1
                    return (result)
 
 eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken   -- aqui pensar em como fica pra array
+                      n2 <- intToken <|> floatToken <|> stringToken  -- aqui pensar em como fica pra array
                       result <- eval_remaining (eval n1 op n2)
                       return (result) 
                     <|> return (n1)     
@@ -37,3 +37,4 @@ eval (Int x) (Mult) (Int y) = Int (x * y)
 eval (Float x) (Add) (Float y) = Float (x + y)
 eval (Float x) (Sub) (Float y) = Float (x - y)
 eval (Float x) (Mult) (Float y) = Float (x * y)
+eval (String x) (Add) (String y) = String (x ++ y)

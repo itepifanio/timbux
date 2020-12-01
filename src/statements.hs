@@ -117,18 +117,6 @@ justAssign = do
           liftIO (print s)
           return (a:b:c ++ [d])
 
--- operation :: ParsecT [Token] [Type] IO [Token]
--- operation = do
---     a <- singletonToken <|> array
---     b <- remaining_operations
---     return (a ++ b) <|> (return []) 
-
--- remaining_operations :: ParsecT [Token] [Type] IO [Token]
--- remaining_operations = (do
---     a <- opToken
---     b <- operation
---     return (a:b)) <|> (return [])
-
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
     a <- funToken

@@ -111,11 +111,6 @@ beginToken = tokenPrim show update_pos get_token where
     get_token Let = Just Let
     get_token _   = Nothing
 
--- opToken :: ParsecT [Token] u IO Token
--- opToken = tokenPrim show update_pos get_token where
---     get_token (Op x) = Just (Op x)
---     get_token _      = Nothing
-
 addToken :: ParsecT [Token] u IO Token
 addToken = tokenPrim show update_pos get_token where
     get_token (Add) = Just (Add)
