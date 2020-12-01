@@ -95,7 +95,7 @@ instAssign = do
           e <- semicolonToken
           s1 <- getState
           if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-          else fail "Type don't match with type of variable"
+          else fail ("Type don't match with type of variable " ++ getVariableName b)
           s2 <- getState
           liftIO (print s2)
           return (a:b:c:d ++ [e])
@@ -107,7 +107,9 @@ justAssign = do
           c <- singletonToken <|> array
           d <- semicolonToken
           s1 <- getState
-          updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+          if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
+              then updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+          else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)
           return (a:b:c ++ [d])
@@ -155,11 +157,11 @@ retornarLexerTipo :: Token -> String
 retornarLexerTipo (Lexer.Int  a)   = "int"
 retornarLexerTipo (Lexer.Float a)  = "float"
 retornarLexerTipo (Lexer.String a) = "string"
+retornarLexerTipo (Lexer.Boolean a) = "boolean"
+retornarLexerTipo (Lexer.Array) = "array"
 
 retornarPrimitiveType :: Token -> String
-retornarPrimitiveType (PrimitiveType "int") = "int"
-retornarPrimitiveType (PrimitiveType "float") = "float"
-retornarPrimitiveType (PrimitiveType "string") = "string"
+retornarPrimitiveType (PrimitiveType a) = a
 
 validarTipo :: Token -> [Token] -> Bool
 validarTipo t (x:xs) = 

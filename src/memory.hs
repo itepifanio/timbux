@@ -18,6 +18,16 @@ data Type = MyType Typex String String                   |
             MyArray [(Typex, [Int])] String String [Int]
             deriving (Show)
 
+convertTypexToPrimitiveType :: Typex -> Token
+convertTypexToPrimitiveType (MyInt _) = PrimitiveType "int"
+convertTypexToPrimitiveType (MyFloat _) = PrimitiveType "float"
+convertTypexToPrimitiveType (MyString _) = PrimitiveType "string"
+
+getType :: [Type] -> String -> String -> Token
+getType ((MyType a id es):ts) variavel es2 = 
+    if id == variavel && es == es2 then convertTypexToPrimitiveType a
+    else getType ts variavel es2
+
 -- lookupScope :: [Type] -> String
 lookupLastScope [] = ""
 lookupLastScope ts = getScope $ last ts
