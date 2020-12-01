@@ -95,7 +95,7 @@ instAssign = do
           e <- semicolonToken
           s1 <- getState
           if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-          else fail "Type don't match with type of variable"
+          else fail ("Type don't match with type of variable " ++ getVariableName b)
           s2 <- getState
           liftIO (print s2)
           return (a:b:c:d ++ [e])
@@ -109,7 +109,7 @@ justAssign = do
           s1 <- getState
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
               then updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
-          else fail "Type don't match with type of variable"
+          else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)
           return (a:b:c ++ [d])
