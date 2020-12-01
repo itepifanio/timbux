@@ -26,11 +26,13 @@ tokens :-
   ":"                                                 { \p -> Colon }
   "fun"                                               { \p -> Fun }
   "endfun"                                            { \p -> Endfun }
+  "+"                                                 { \p -> Add }
+  "-"                                                 { \p -> Sub }
+  "*"                                                 { \p -> Mult }
   (\( | \[ | \{)                                      { \p -> BlockBegin p} 
   (\) | \] | \})                                      { \p -> BlockEnd p} 
   (\=+\=|\>+\=|\<+\=|\>|\<)                           { \p -> ComparativeOp p}
   (\&+\&|\|+\||\!)                                    { \p -> LogicalOp p}
-  $op                                                 { \p -> Op (head p) } 
   \-$digit+|$digit+                                   { \p -> Int (read p) }
   $digit+\.$digit+                                    { \p -> Float (read p) }
   (true|false)                                        { \p -> Boolean p }
@@ -42,7 +44,6 @@ tokens :-
 {
 
 data Token =
-    Op              Char    |
     Comma           String  |
     Int             Int     |
     Name            String  |
@@ -67,7 +68,10 @@ data Token =
     Keyword         String  |
     ComparativeOp   String  |
     String          String  |
-    LogicalOp       String 
+    LogicalOp       String  |
+    Add                     |
+    Sub                     |
+    Mult                    
     deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
