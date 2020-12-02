@@ -113,7 +113,7 @@ justAssign = do
           s2 <- getState
           liftIO (print s2)
           return (a:b:c ++ [d])
-
+          
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
     a <- funToken

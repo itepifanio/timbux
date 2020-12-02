@@ -45,6 +45,12 @@ symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
 symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableUpdate x a)
 
+symtableSearch :: [Type] -> String -> String -> Typex
+symtableSearch ((MyType a id es):ts) variavel es2 = 
+    if id == variavel && es == es2 then a
+    else symtableSearch ts variavel es2
+
+
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
 symtableInsert symbol table = table++[symbol]
@@ -81,6 +87,12 @@ fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)    nome escopo
 fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a) nome escopo
 fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)  nome escopo
 fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a) nome escopo
+
+-- Converte um typex para um token
+fromTypeX :: Typex -> Token
+fromTypeX (MyInt a) = Int a
+fromTypeX (MyFloat a) = Float a
+fromTypeX (MyString a) = String a
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
