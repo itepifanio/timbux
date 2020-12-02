@@ -18,13 +18,11 @@ una_expression = literal_values <|> literal_from_name
 
 literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
 literal_values =  do
-                    -- op <- addToken <|> subToken <|> multToken
                     a <- intToken <|> floatToken <|> stringToken
                     return (a) 
 
 literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
-                    -- op <- addToken <|> subToken <|> multToken
                     a <- idToken
                     s1 <- getState
                     return (fromTypeX ( symtableSearch s1 (getVariableName a) "" )) 

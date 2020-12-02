@@ -78,9 +78,7 @@ forStatement = do
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
-            -- a <- expression <|> intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
             a <- expression <|> booleanToken
-            
             return([a])
 
 assign :: ParsecT [Token] [Type] IO([Token])
