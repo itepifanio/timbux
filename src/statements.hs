@@ -30,13 +30,11 @@ generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
-    c <- idToken <|> floatToken <|> intToken
-    d <- comparativeOpToken
-    e <- idToken <|> floatToken <|> intToken
-    f <- blockEndToken    ")"
-    g <- stmts
-    h <- keywordToken endstmt
-    return (a:b:c:d:e:f:g++[h])
+    c <- logicStatement
+    d <- blockEndToken    ")"
+    e <- stmts
+    f <- keywordToken endstmt
+    return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
 whileStatement = generalStatement "while" "endwhile"
@@ -52,7 +50,7 @@ onlyIfStatement = generalStatement "if" "endif"
 ifElseStatement :: ParsecT [Token] [Type] IO([Token])
 ifElseStatement = do
     a <- generalStatement "if" "else"
-    b <- stmts
+    b <- logicStatement
     c <- keywordToken "endif"
     return (a ++ b++[c])
 
@@ -62,6 +60,18 @@ logicStatement = do
     b <- comparativeOpToken
     c <- idToken <|> floatToken <|> intToken
     return (a:b:[c])
+
+logic :: Token -> Token -> Token -> Bool
+logic (Int x) (ComparativeOp ">") (Int y) = x > y
+logic (Float x) (ComparativeOp ">") (Float y) = x > x
+logic (Int x) (ComparativeOp ">=") (Int y) = x >= y
+logic (Float x) (ComparativeOp ">=") (Float y) = x >= y
+logic (Int x) (ComparativeOp "<") (Int y) = x < y
+logic (Float x) (ComparativeOp "<") (Float y) = x < y
+logic (Int x) (ComparativeOp "<=") (Int y) = x <= y
+logic (Float x) (ComparativeOp "<=") (Float y) = x <= y
+logic (Int x) (ComparativeOp "==") (Int y) = x == y
+logic (Float x) (ComparativeOp "==") (Float y) = x == y
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
