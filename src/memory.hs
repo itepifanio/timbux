@@ -50,7 +50,6 @@ symtableSearch ((MyType a id es):ts) variavel es2 =
     if id == variavel && es == es2 then a
     else symtableSearch ts variavel es2
 
-
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
 symtableInsert symbol table = table++[symbol]
