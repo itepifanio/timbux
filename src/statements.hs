@@ -78,7 +78,7 @@ forStatement = do
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
-            a <- expression <|> intToken <|> floatToken <|> booleanToken <|> stringToken <|> idToken
+            a <- expression <|> booleanToken
             return([a])
 
 assign :: ParsecT [Token] [Type] IO([Token])
@@ -94,8 +94,9 @@ instAssign = do
           d <- singletonToken <|> array
           e <- semicolonToken
           s1 <- getState
-          if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-          else fail ("Type don't match with type of variable " ++ getVariableName b)
+          updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
+        --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
+        --   else fail ("Type don't match with type of variable " ++ getVariableName b)
           s2 <- getState
           liftIO (print s2)
           return (a:b:c:d ++ [e])
@@ -113,7 +114,7 @@ justAssign = do
           s2 <- getState
           liftIO (print s2)
           return (a:b:c ++ [d])
-
+          
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
     a <- funToken

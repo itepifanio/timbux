@@ -126,7 +126,6 @@ multToken = tokenPrim show update_pos get_token where
     get_token (Mult) = Just (Mult)
     get_token _      = Nothing
 
-
 -- e termina com o ghbc
 endToken :: ParsecT [Token] u IO Token
 endToken = tokenPrim show update_pos get_token where
