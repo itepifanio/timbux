@@ -1,9 +1,5 @@
 Let crossProduct
-    int a = 1;
-    float b = 2+3.5;
-    fun soma (int a, int b) : int
-      int c = 3;
-      return c;
-	  endfun;
-    int d = 3;
+    float b = 1.2 + 3;
+    int a = -2 + 4;
+    int i = a * b;
 Ghbc
