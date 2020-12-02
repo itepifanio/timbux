@@ -1,5 +1,5 @@
 Let crossProduct
 
-    int a = 2;
-    int i = a;
+    int a = -2 + 3;
+    int i = a * 4;
 Ghbc
