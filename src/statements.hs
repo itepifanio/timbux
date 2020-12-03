@@ -30,11 +30,12 @@ generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
-    c <- logicStatement
+    c <- logicExpression
     d <- blockEndToken    ")"
-    if logic (c!!0) (c!!1) (c!!2)
+    if tokenToBool (c!!0)
         then updateState ( symtableUpdateFlag 1 )
     else updateState ( symtableUpdateFlag 0)
+
     e <- stmts
     f <- keywordToken endstmt
     updateState ( symtableUpdateFlag 1)
@@ -54,25 +55,19 @@ onlyIfStatement = generalStatement "if" "endif"
 ifElseStatement :: ParsecT [Token] [Type] IO([Token])
 ifElseStatement = do
     a <- generalStatement "if" "else"
-    b <- logicStatement
+    b <- logicExpression
     c <- keywordToken "endif"
     return (a ++ b++[c])
 
-logicStatement :: ParsecT [Token] [Type] IO([Token])
-logicStatement = do
-    a <- idToken <|> floatToken <|> intToken
-    b <- comparativeOpToken
-    c <- idToken <|> floatToken <|> intToken
-    return (a:b:[c])
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
     a <- keywordToken "for"
     b <- blockBeginToken "("
     c <- assign
-    d <- logicStatement
+    d <- logicExpression
     e <- semicolonToken
-    f <- logicStatement
+    f <- logicExpression
     l <- blockEndToken  ")"
     m <- stmts
     n <- keywordToken "endfor"

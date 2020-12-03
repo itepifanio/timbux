@@ -95,6 +95,11 @@ comparativeOpToken = tokenPrim show update_pos get_token where
     get_token (ComparativeOp x) = Just (ComparativeOp x)
     get_token _                 = Nothing
 
+logicalOpToken :: ParsecT [Token] u IO Token
+logicalOpToken = tokenPrim show update_pos get_token where
+    get_token (LogicalOp x) = Just (LogicalOp x)
+    get_token _                 = Nothing
+
 primitiveTypeToken :: ParsecT [Token] u IO Token
 primitiveTypeToken = tokenPrim show update_pos get_token where
     get_token (PrimitiveType x) = Just (PrimitiveType x)
