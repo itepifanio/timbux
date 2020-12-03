@@ -4,7 +4,7 @@ import Lexer
 import Token
 import Text.Parsec
 import Memory
-import Evaluation
+import Expression
 import Data.Functor.Identity
 
 import Control.Monad.IO.Class
@@ -30,11 +30,15 @@ generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
-    c <- logicStatement
+    c <- logicExpression
     d <- blockEndToken    ")"
+    if tokenToBool (c!!0)
+        then updateState ( symtableUpdateFlag 1 )
+    else updateState ( symtableUpdateFlag 0)
     e <- stmts
     f <- keywordToken endstmt
-    return ((a:b:c++d:e)++[f])
+    updateState ( symtableUpdateFlag 1)
+    return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
 whileStatement = generalStatement "while" "endwhile"
@@ -50,30 +54,18 @@ onlyIfStatement = generalStatement "if" "endif"
 ifElseStatement :: ParsecT [Token] [Type] IO([Token])
 ifElseStatement = do
     a <- generalStatement "if" "else"
-    b <- stmts
+    b <- logicExpression
     c <- keywordToken "endif"
     return (a ++ b++[c])
-
-logicStatement :: ParsecT [Token] [Type] IO([Token])
-logicStatement = (do
-    a <- idToken <|> floatToken <|> intToken
-    b <- remainingLogics
-    return (a:b)) <|> (return [])
-
-remainingLogics :: ParsecT [Token] [Type] IO([Token])
-remainingLogics = (do
-    a <- comparativeOpToken <|> logicalOpToken
-    b <- logicStatement
-    return (a:b)) <|> (return [])
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
     a <- keywordToken "for"
     b <- blockBeginToken "("
     c <- assign
-    d <- logicStatement
+    d <- logicExpression
     e <- semicolonToken
-    f <- logicStatement
+    f <- logicExpression
     l <- blockEndToken  ")"
     m <- stmts
     n <- keywordToken "endfor"
@@ -112,7 +104,7 @@ justAssign = do
           d <- semicolonToken
           s1 <- getState
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
-              then updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+              then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)

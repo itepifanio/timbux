@@ -43,7 +43,7 @@ symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
 
 symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
-symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableUpdate x a)
+symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableCanUpdate x a)
 
 symtableSearch :: [Type] -> String -> String -> Typex
 symtableSearch ((MyType a id es):ts) variavel es2 = 
@@ -52,7 +52,15 @@ symtableSearch ((MyType a id es):ts) variavel es2 =
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
-symtableInsert symbol table = table++[symbol]
+symtableInsert symbol table = if canOperate table then table++[symbol] else table
+
+-- Pra não ter fazer essa verificação no symtableUpdate,
+-- achei melhor fazer aqui, não muda nada na estrutura do código
+symtableCanUpdate :: Type -> [Type] -> [Type]
+symtableCanUpdate t table = 
+    if canOperate table 
+        then symtableUpdate t table
+    else table
 
 symtableUpdate :: Type -> [Type] -> [Type]
 symtableUpdate _ [] = fail "Not found"
@@ -65,6 +73,12 @@ symtableUpdate (MyArray a id1 es1 b) ((MyArray c id2 es2 d):t) =
                             else (MyArray c id2 es2 d) : symtableUpdate (MyArray a id1 es1 b) t
 symtableUpdate (MyArray a id1 es1 b) ((MyType c id2 es2 ):t) = (MyType c id2 es2 ) : symtableUpdate (MyArray a id1 es1 b) t
 
+symtableCanDelete :: String -> [Type] -> [Type]
+symtableCanDelete es table = 
+    if canOperate table 
+        then symtableDelete es table
+    else table
+
 symtableDelete :: String -> [Type] -> [Type]
 symtableDelete _ [] = []
 symtableDelete es1 ((MyType typex id2 es2):t) =  
@@ -73,6 +87,14 @@ symtableDelete es1 ((MyType typex id2 es2):t) =
 symtableDelete es1 ((MyArray a id es2 s):t) =
                             if es1 == es2 then symtableDelete es1 t
                             else (MyArray a id es2 s) : symtableDelete es1 t
+
+----- FLAG -----
+-- a flag sempre é o primeiro elemento, por isso as funções desta forma
+symtableUpdateFlag :: Int -> [Type] -> [Type]
+symtableUpdateFlag int ((MyType b id2 es2):table) = ((MyType (MyInt int) "asdasldj==@#!" ""):table)
+
+canOperate :: [Type] -> Bool
+canOperate ((MyType (MyInt a) v e):ts) = a == 1
 
 -- Converte um array de tokens em nosso datatype Type
 fromToken :: [Token] -> String -> String -> Type
@@ -132,9 +154,10 @@ fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
 
 
+
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 
--- Exemplo de uso do symtableUpdate atualizando o MyType para 2
+-- Exemplo de uso do symtableCanUpdate atualizando o MyType para 2
 -- symtableUpdate
 --    (MyType (MyInt 2) "nomeDaVariavel" "escopo") 
 --    ([
