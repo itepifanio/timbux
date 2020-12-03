@@ -2,7 +2,11 @@ Let crossProduct
     float b = 1.2 + 3;
     int a = -2 + 4;
     int i = a * b;
-    if(13 > 12 && 9 > 10)
+    if(i >= i && a == 2)
+        int c = 20;
+        int j = a * b;
+    endif
+    if(i < a || b > a)
         int c = 20;
         int j = a * b;
     endif
