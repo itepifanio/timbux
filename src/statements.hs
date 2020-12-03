@@ -30,13 +30,11 @@ generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
     a <- keywordToken stmt
     b <- blockBeginToken "("
-    c <- idToken <|> floatToken <|> intToken
-    d <- comparativeOpToken
-    e <- idToken <|> floatToken <|> intToken
-    f <- blockEndToken    ")"
-    g <- stmts
-    h <- keywordToken endstmt
-    return (a:b:c:d:e:f:g++[h])
+    c <- logicStatement
+    d <- blockEndToken    ")"
+    e <- stmts
+    f <- keywordToken endstmt
+    return ((a:b:c++d:e)++[f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
 whileStatement = generalStatement "while" "endwhile"
@@ -57,11 +55,16 @@ ifElseStatement = do
     return (a ++ b++[c])
 
 logicStatement :: ParsecT [Token] [Type] IO([Token])
-logicStatement = do
+logicStatement = (do
     a <- idToken <|> floatToken <|> intToken
-    b <- comparativeOpToken
-    c <- idToken <|> floatToken <|> intToken
-    return (a:b:[c])
+    b <- remainingLogics
+    return (a:b)) <|> (return [])
+
+remainingLogics :: ParsecT [Token] [Type] IO([Token])
+remainingLogics = (do
+    a <- comparativeOpToken <|> logicalOpToken
+    b <- logicStatement
+    return (a:b)) <|> (return [])
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
@@ -154,6 +157,7 @@ remainingArguments = (do
     b <- arguments
     return (a:b)) <|> (return [])
 
+-- TODO::mover desse arquivo
 retornarLexerTipo :: Token -> String 
 retornarLexerTipo (Lexer.Int  a)   = "int"
 retornarLexerTipo (Lexer.Float a)  = "float"
@@ -161,9 +165,11 @@ retornarLexerTipo (Lexer.String a) = "string"
 retornarLexerTipo (Lexer.Boolean a) = "boolean"
 retornarLexerTipo (Lexer.Array) = "array"
 
+-- TODO::mover desse arquivo
 retornarPrimitiveType :: Token -> String
 retornarPrimitiveType (PrimitiveType a) = a
 
+-- TODO::mover desse arquivo
 validarTipo :: Token -> [Token] -> Bool
 validarTipo t (x:xs) = 
                 if retornarPrimitiveType t == retornarLexerTipo x then True

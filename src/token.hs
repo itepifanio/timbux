@@ -58,6 +58,11 @@ booleanToken = tokenPrim show update_pos get_token where
     get_token (Boolean x) = Just (Boolean x)
     get_token _           = Nothing
 
+logicalOpToken :: ParsecT [Token] u IO Token
+logicalOpToken = tokenPrim show update_pos get_token where
+    get_token (LogicalOp x) = Just (LogicalOp x)
+    get_token _           = Nothing
+
 array :: ParsecT [Token] u IO [Token]
 array = do
           open <- blockBeginToken "["

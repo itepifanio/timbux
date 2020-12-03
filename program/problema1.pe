@@ -1,0 +1,6 @@
+Let problemaUm
+    int x = 1;
+    int y = 2;
+    int c = 1;
+    int d = x*x - y + c;
+Ghbc
