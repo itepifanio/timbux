@@ -58,18 +58,18 @@ eval (String x) (Add)   (String y)= String (x ++ y)
 
 logicExpression :: ParsecT [Token] [Type] IO([Token])
 logicExpression = do
-    a <- floatToken <|> intToken <|> literal_from_name
+    a <- floatToken <|> intToken <|> expression
     b <- comparativeOpToken
-    c <- floatToken <|> intToken <|> literal_from_name
+    c <- floatToken <|> intToken <|> expression
     result <- logic_remaining (logicComparative a b c)
     return result
 
 logic_remaining :: Bool -> ParsecT [Token] [Type] IO([Token])
 logic_remaining bool = (do
     a <- logicalOpToken 
-    b <- floatToken <|> intToken <|> literal_from_name
+    b <- floatToken <|> intToken <|> expression
     c <- comparativeOpToken
-    d <- floatToken <|> intToken <|> literal_from_name
+    d <- floatToken <|> intToken <|> expression
     result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
     return (result)) <|> (return [boolToToken bool])
 
@@ -106,4 +106,3 @@ logicComparative (Int x) (ComparativeOp "==") (Int y) = x == y
 logicComparative (Float x) (ComparativeOp "==") (Float y) = x == x
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
-logicComparative a b c = False

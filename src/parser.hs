@@ -12,7 +12,7 @@ program :: ParsecT [Token] [Type] IO [Token]
 program = do
         updateState(symtableInsert (MyType (MyInt 1) "asdasldj==@#!" ""))
         a <- beginToken 
-        b <- idToken -- nome do programa
+        b <- idToken -- nome do programass
         c <- stmts
         eof
         return ([a] ++ [b] ++ c)
@@ -27,7 +27,7 @@ parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens
 
 main :: IO ()
-main = case unsafePerformIO (parser (getTokens "./program/problema1.pe")) of
+main = case unsafePerformIO (parser (getTokens "./program/programv1.pe")) of
             { Left err -> print err; 
               Right ans -> print ans
             }
