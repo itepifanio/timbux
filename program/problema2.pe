@@ -1,0 +1,25 @@
+Let problemaDois
+    int x = -1;
+    
+    if (x < 0)
+        x = -2;
+    endif
+
+    if(x < 0 && x < 25)
+        x = 1;
+    endif
+
+    if(x > 25 && x < 50)
+        x = 2;
+    endif
+
+    if(x > 50 && x < 75)
+        x = 3;
+    endif
+
+    if(x > 76 && x < 100)
+        x = 4;
+    endif
+
+    x = 2;
+Ghbc

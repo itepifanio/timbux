@@ -35,7 +35,6 @@ generalStatement stmt endstmt = do
     if tokenToBool (c!!0)
         then updateState ( symtableUpdateFlag 1 )
     else updateState ( symtableUpdateFlag 0)
-
     e <- stmts
     f <- keywordToken endstmt
     updateState ( symtableUpdateFlag 1)
@@ -58,7 +57,6 @@ ifElseStatement = do
     b <- logicExpression
     c <- keywordToken "endif"
     return (a ++ b++[c])
-
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
@@ -151,6 +149,7 @@ remainingArguments = (do
     b <- arguments
     return (a:b)) <|> (return [])
 
+-- TODO::mover desse arquivo
 retornarLexerTipo :: Token -> String 
 retornarLexerTipo (Lexer.Int  a)   = "int"
 retornarLexerTipo (Lexer.Float a)  = "float"
@@ -158,9 +157,11 @@ retornarLexerTipo (Lexer.String a) = "string"
 retornarLexerTipo (Lexer.Boolean a) = "boolean"
 retornarLexerTipo (Lexer.Array) = "array"
 
+-- TODO::mover desse arquivo
 retornarPrimitiveType :: Token -> String
 retornarPrimitiveType (PrimitiveType a) = a
 
+-- TODO::mover desse arquivo
 validarTipo :: Token -> [Token] -> Bool
 validarTipo t (x:xs) = 
                 if retornarPrimitiveType t == retornarLexerTipo x then True
