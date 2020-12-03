@@ -4,7 +4,7 @@ import Lexer
 import Token
 import Text.Parsec
 import Memory
-import Evaluation
+import Expression
 import Data.Functor.Identity
 
 import Control.Monad.IO.Class
@@ -104,7 +104,7 @@ justAssign = do
           d <- semicolonToken
           s1 <- getState
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
-              then updateState (symtableUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+              then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)

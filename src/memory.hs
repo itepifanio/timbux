@@ -43,7 +43,7 @@ symtableInsertMany (x:xs) a = symtableInsertMany xs (symtableInsert x a)
 
 symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
-symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableUpdate x a)
+symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableCanUpdate x a)
 
 symtableSearch :: [Type] -> String -> String -> Typex
 symtableSearch ((MyType a id es):ts) variavel es2 = 
@@ -54,39 +54,39 @@ symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
 symtableInsert symbol table = if canOperate table then table++[symbol] else table
 
--- Pra não ter fazer essa verificação no symtableUpdate2,
+-- Pra não ter fazer essa verificação no symtableUpdate,
 -- achei melhor fazer aqui, não muda nada na estrutura do código
-symtableUpdate :: Type -> [Type] -> [Type]
-symtableUpdate t table = 
+symtableCanUpdate :: Type -> [Type] -> [Type]
+symtableCanUpdate t table = 
     if canOperate table 
-        then symtableUpdate2 t table
+        then symtableUpdate t table
     else table
 
-symtableUpdate2 :: Type -> [Type] -> [Type]
-symtableUpdate2 _ [] = fail "Not found"
-symtableUpdate2 (MyType a id1 es1) ((MyType b id2 es2):t) =
+symtableUpdate :: Type -> [Type] -> [Type]
+symtableUpdate _ [] = fail "Not found"
+symtableUpdate (MyType a id1 es1) ((MyType b id2 es2):t) =
                             if id1 == id2 && es1 == es2 then ((MyType a id1 es1) : t)
-                            else (MyType b id2 es2) : symtableUpdate2 (MyType a id1 es1) t
-symtableUpdate2 (MyType a id1 es1) ((MyArray b id2 es2 d):t) = (MyArray b id2 es2 d) : symtableUpdate2 (MyType a id1 es1) t
-symtableUpdate2 (MyArray a id1 es1 b) ((MyArray c id2 es2 d):t) =
+                            else (MyType b id2 es2) : symtableUpdate (MyType a id1 es1) t
+symtableUpdate (MyType a id1 es1) ((MyArray b id2 es2 d):t) = (MyArray b id2 es2 d) : symtableUpdate (MyType a id1 es1) t
+symtableUpdate (MyArray a id1 es1 b) ((MyArray c id2 es2 d):t) =
                             if id1 == id2 && es1 == es2 then ((MyArray a id1 es1 b) : t)
-                            else (MyArray c id2 es2 d) : symtableUpdate2 (MyArray a id1 es1 b) t
-symtableUpdate2 (MyArray a id1 es1 b) ((MyType c id2 es2 ):t) = (MyType c id2 es2 ) : symtableUpdate2 (MyArray a id1 es1 b) t
+                            else (MyArray c id2 es2 d) : symtableUpdate (MyArray a id1 es1 b) t
+symtableUpdate (MyArray a id1 es1 b) ((MyType c id2 es2 ):t) = (MyType c id2 es2 ) : symtableUpdate (MyArray a id1 es1 b) t
+
+symtableCanDelete :: String -> [Type] -> [Type]
+symtableCanDelete es table = 
+    if canOperate table 
+        then symtableDelete es table
+    else table
 
 symtableDelete :: String -> [Type] -> [Type]
-symtableDelete es table = 
-    if canOperate table 
-        then symtableDelete2 es table
-    else table
-
-symtableDelete2 :: String -> [Type] -> [Type]
-symtableDelete2 _ [] = []
-symtableDelete2 es1 ((MyType typex id2 es2):t) =  
+symtableDelete _ [] = []
+symtableDelete es1 ((MyType typex id2 es2):t) =  
                             if es1 == es2 then t
-                            else (MyType typex id2 es2) : symtableDelete2 es1 t
-symtableDelete2 es1 ((MyArray a id es2 s):t) =
-                            if es1 == es2 then symtableDelete2 es1 t
-                            else (MyArray a id es2 s) : symtableDelete2 es1 t
+                            else (MyType typex id2 es2) : symtableDelete es1 t
+symtableDelete es1 ((MyArray a id es2 s):t) =
+                            if es1 == es2 then symtableDelete es1 t
+                            else (MyArray a id es2 s) : symtableDelete es1 t
 
 ----- FLAG -----
 -- a flag sempre é o primeiro elemento, por isso as funções desta forma
@@ -157,7 +157,7 @@ fromTypeToTypex (MyType t _ _) = t
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 
--- Exemplo de uso do symtableUpdate atualizando o MyType para 2
+-- Exemplo de uso do symtableCanUpdate atualizando o MyType para 2
 -- symtableUpdate
 --    (MyType (MyInt 2) "nomeDaVariavel" "escopo") 
 --    ([

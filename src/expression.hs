@@ -1,4 +1,4 @@
-module Evaluation where
+module Expression where
 
 import Lexer
 import Token
