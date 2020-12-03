@@ -55,3 +55,26 @@ eval (Int x)    (Add)   (Float y) = Float (fromIntegral x + y)
 eval (Int x)    (Sub)   (Float y) = Float (fromIntegral x - y)
 eval (Int x)    (Mult)  (Float y) = Float (fromIntegral x * y)
 eval (String x) (Add)   (String y)= String (x ++ y)
+
+
+logic :: Token -> Token -> Token -> Bool
+logic (Int x) (ComparativeOp ">") (Int y) = x > y
+logic (Float x) (ComparativeOp ">") (Float y) = x > x
+logic (Int x) (ComparativeOp ">") (Float y) = fromIntegral x > y
+logic (Float x) (ComparativeOp ">") (Int y) = x > fromIntegral y
+logic (Int x) (ComparativeOp ">=") (Int y) = x >= y
+logic (Float x) (ComparativeOp ">=") (Float y) = x >= x
+logic (Int x) (ComparativeOp ">=") (Float y) = fromIntegral x >= y
+logic (Float x) (ComparativeOp ">=") (Int y) = x >= fromIntegral y
+logic (Int x) (ComparativeOp "<") (Int y) = x < y
+logic (Float x) (ComparativeOp "<") (Float y) = x < x
+logic (Int x) (ComparativeOp "<") (Float y) = fromIntegral x < y
+logic (Float x) (ComparativeOp "<") (Int y) = x < fromIntegral y
+logic (Int x) (ComparativeOp "<=") (Int y) = x <= y
+logic (Float x) (ComparativeOp "<=") (Float y) = x <= x
+logic (Int x) (ComparativeOp "<=") (Float y) = fromIntegral x <= y
+logic (Float x) (ComparativeOp "<=") (Int y) = x <= fromIntegral y
+logic (Int x) (ComparativeOp "==") (Int y) = x == y
+logic (Float x) (ComparativeOp "==") (Float y) = x == x
+logic (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
+logic (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y

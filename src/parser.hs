@@ -10,6 +10,7 @@ import System.IO.Unsafe
 
 program :: ParsecT [Token] [Type] IO [Token]
 program = do
+        updateState(symtableInsert (MyType (MyInt 1) "asdasldj==@#!" ""))
         a <- beginToken 
         b <- idToken -- nome do programa
         c <- stmts

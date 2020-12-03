@@ -32,8 +32,12 @@ generalStatement stmt endstmt = do
     b <- blockBeginToken "("
     c <- logicStatement
     d <- blockEndToken    ")"
+    if logic (c!!0) (c!!1) (c!!2)
+        then updateState ( symtableUpdateFlag 1 )
+    else updateState ( symtableUpdateFlag 0)
     e <- stmts
     f <- keywordToken endstmt
+    updateState ( symtableUpdateFlag 1)
     return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
@@ -60,18 +64,6 @@ logicStatement = do
     b <- comparativeOpToken
     c <- idToken <|> floatToken <|> intToken
     return (a:b:[c])
-
-logic :: Token -> Token -> Token -> Bool
-logic (Int x) (ComparativeOp ">") (Int y) = x > y
-logic (Float x) (ComparativeOp ">") (Float y) = x > x
-logic (Int x) (ComparativeOp ">=") (Int y) = x >= y
-logic (Float x) (ComparativeOp ">=") (Float y) = x >= y
-logic (Int x) (ComparativeOp "<") (Int y) = x < y
-logic (Float x) (ComparativeOp "<") (Float y) = x < y
-logic (Int x) (ComparativeOp "<=") (Int y) = x <= y
-logic (Float x) (ComparativeOp "<=") (Float y) = x <= y
-logic (Int x) (ComparativeOp "==") (Int y) = x == y
-logic (Float x) (ComparativeOp "==") (Float y) = x == y
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
