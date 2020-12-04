@@ -1,11 +1,12 @@
 Let problemaDois
     int x = -1;
-    
+
     if (x < 0)
+        int a = 10;
         x = -2;
     endif
 
-    if(x < 0 && x < 25)
+    if(x > 0 && x < 25)
         x = 1;
     endif
 
@@ -20,6 +21,4 @@ Let problemaDois
     if(x > 76 && x < 100)
         x = 4;
     endif
-
-    x = 2;
 Ghbc

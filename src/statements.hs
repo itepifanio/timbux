@@ -65,9 +65,13 @@ forStatement = do
     c <- assign
     d <- logicExpression
     e <- semicolonToken
-    f <- logicExpression
+    f <- justAssign
     l <- blockEndToken  ")"
+    z <- getInput
+    liftIO (print (takeUntil isKeywordToken z))
     m <- stmts
+    z <- getInput
+    liftIO (print z)
     n <- keywordToken "endfor"
     return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n]))
 
@@ -79,7 +83,8 @@ singletonToken = do
 assign :: ParsecT [Token] [Type] IO([Token])
 assign = do
         a <- instAssign <|> justAssign
-        return a
+        b <- semicolonToken
+        return (a++[b])
 
 instAssign :: ParsecT [Token] [Type] IO([Token])
 instAssign = do
@@ -87,28 +92,26 @@ instAssign = do
           b <- idToken
           c <- assignToken
           d <- singletonToken <|> array
-          e <- semicolonToken
           s1 <- getState
           updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   else fail ("Type don't match with type of variable " ++ getVariableName b)
           s2 <- getState
           liftIO (print s2)
-          return (a:b:c:d ++ [e])
+          return (a:b:c:d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
 justAssign = do
           a <- idToken
           b <- assignToken
           c <- singletonToken <|> array
-          d <- semicolonToken
           s1 <- getState
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
               then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)
-          return (a:b:c ++ [d])
+          return (a:b:c)
           
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
@@ -167,3 +170,14 @@ validarTipo t (x:xs) =
                 if retornarPrimitiveType t == retornarLexerTipo x then True
                 else if (retornarPrimitiveType t == "float") && (retornarLexerTipo x == "int") then True
                 else False
+
+-- TODO::mover daqui
+isKeywordToken :: Token -> Bool
+isKeywordToken (Lexer.Keyword k) = True
+isKeywordToken _           = False
+
+-- TODO::mover daqui
+takeUntil :: (a -> Bool) -> [a] -> [a]
+takeUntil _ [] = []
+takeUntil p (x:xs) = x : if p x then []
+                         else takeUntil p xs

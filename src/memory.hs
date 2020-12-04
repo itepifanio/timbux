@@ -58,7 +58,7 @@ symtableInsert symbol table = if canOperate table then table++[symbol] else tabl
 -- achei melhor fazer aqui, não muda nada na estrutura do código
 symtableCanUpdate :: Type -> [Type] -> [Type]
 symtableCanUpdate t table = 
-    if canOperate table 
+    if canOperate table
         then symtableUpdate t table
     else table
 
@@ -152,7 +152,6 @@ isIdToken _               = False
 
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
-
 
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
