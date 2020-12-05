@@ -37,7 +37,7 @@ tokens :-
   $digit+\.$digit+                                    { \p -> Float (read p) }
   (true|false)                                        { \p -> Boolean p }
   (int|float|string|array|boolean|matrix)             { \p -> PrimitiveType p}
-  (if|endif|else|for|endfor|continue|break|while|endwhile|const|var|return) { \p -> Keyword p}
+  (if|endif|else|for|endfor|continue|break|while|endwhile|const|var|return|print|input) { \p -> Keyword p}
   (\, | \" | \')                                      { \p -> Comma p}        
   $alpha+                                             { \p -> Name p }
 

@@ -1,16 +1,8 @@
 Let crossProduct
-    float b = 1.2 + 3;
-    int a = -2 + 4;
-    int i = a * b;
-    if(i >= a * b && b > a)
-        int c = 20;
-        int j = a * c;
-    endif
-
-    if(i >= a * b || b < a)
-        int c = 20;
-        int j = a * c;
-    endif
-
-    b = 10.1;
+    int somatorio = 0;
+    for (int i = 0; i < 10; i = i + 1)
+        somatorio = somatorio + 1;
+        somatorio = somatorio + 1;
+    endfor
+    int n = input(int);
 Ghbc

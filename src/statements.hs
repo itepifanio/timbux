@@ -6,13 +6,13 @@ import Text.Parsec
 import Memory
 import Expression
 import Data.Functor.Identity
-
 import Control.Monad.IO.Class
+import System.IO
 import System.IO.Unsafe
 
 stmts :: ParsecT [Token] [Type] IO [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -25,6 +25,25 @@ endProgram = do
            a <- endToken
            eof
            return ([a])
+
+inputStmt :: ParsecT [Token] [Type] IO([Token])
+inputStmt = do 
+    a <- keywordToken "input"
+    b <- blockBeginToken "("
+    c <- primitiveTypeToken -- o usuário deve informar o tipo a ser lido
+    d <- blockEndToken ")"
+    input <- (liftIO (hGetLine stdin))
+    return ([(convert c input)])
+
+printStmt :: ParsecT [Token] [Type] IO([Token])
+printStmt = do 
+    a <- keywordToken "print"
+    b <- blockBeginToken "("
+    c <- expression
+    d <- blockEndToken ")"
+    e <- semicolonToken
+    liftIO (putStrLn (getValue c))
+    return (a:b:c:[d] ++ [e])
 
 generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
@@ -60,16 +79,30 @@ ifElseStatement = do
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
+    z <- getInput
     a <- keywordToken "for"
     b <- blockBeginToken "("
     c <- assign
     d <- logicExpression
+    if tokenToBool (d!!0)
+        then updateState (symtableUpdateFlag 1)
+    else updateState ( symtableUpdateFlag 0)
     e <- semicolonToken
-    f <- logicExpression
+    f <- justAssign
     l <- blockEndToken  ")"
+
+    -- liftIO (print (z \\ takeUntil isKeywordToken z)) -- \\\\ é diferença total entre listas
+    -- setInput <- z ++ (z \\ takeUntil isKeywordToken z)
     m <- stmts
     n <- keywordToken "endfor"
-    return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n]))
+    y <- getState
+    if isExecuting y then
+        do 
+            setInput z
+            aaaaaa <- forStatement
+            return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
+    else 
+        do return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
@@ -79,36 +112,35 @@ singletonToken = do
 assign :: ParsecT [Token] [Type] IO([Token])
 assign = do
         a <- instAssign <|> justAssign
-        return a
+        b <- semicolonToken
+        return (a++[b])
 
 instAssign :: ParsecT [Token] [Type] IO([Token])
 instAssign = do
           a <- primitiveTypeToken
           b <- idToken
           c <- assignToken
-          d <- singletonToken <|> array
-          e <- semicolonToken
+          d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
           updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   else fail ("Type don't match with type of variable " ++ getVariableName b)
           s2 <- getState
           liftIO (print s2)
-          return (a:b:c:d ++ [e])
+          return (a:b:c:d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
 justAssign = do
           a <- idToken
           b <- assignToken
-          c <- singletonToken <|> array
-          d <- semicolonToken
+          c <- singletonToken <|> array <|> inputStmt
           s1 <- getState
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
               then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           liftIO (print s2)
-          return (a:b:c ++ [d])
+          return (a:b:c)
           
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
@@ -163,7 +195,25 @@ retornarPrimitiveType (PrimitiveType a) = a
 
 -- TODO::mover desse arquivo
 validarTipo :: Token -> [Token] -> Bool
-validarTipo t (x:xs) = 
-                if retornarPrimitiveType t == retornarLexerTipo x then True
-                else if (retornarPrimitiveType t == "float") && (retornarLexerTipo x == "int") then True
+validarTipo t x = 
+                if retornarPrimitiveType t == retornarLexerTipo (last x)
+                    then True
+                else if (retornarPrimitiveType t == "float") && (retornarLexerTipo (last x) == "int") 
+                    then True
                 else False
+
+-- TODO::mover daqui
+isKeywordToken :: Token -> Bool
+isKeywordToken (Lexer.Keyword k) = True
+isKeywordToken _           = False
+
+-- TODO::mover daqui
+takeUntil :: (a -> Bool) -> [a] -> [a]
+takeUntil _ [] = []
+takeUntil p (x:xs) = x : if p x then []
+                         else takeUntil p xs
+
+convert :: Token -> [Char] -> Token
+convert (PrimitiveType "int") x = (Lexer.Int (read x::Int))
+convert (PrimitiveType "float") x = (Lexer.Float (read x::Double))
+convert (PrimitiveType "string") x = (Lexer.String x)

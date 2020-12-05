@@ -19,7 +19,7 @@ una_expression = literal_values <|> literal_from_name
 literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
 literal_values =  do
                     a <- intToken <|> floatToken <|> stringToken
-                    return (a) 
+                    return (a)
 
 literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
@@ -106,3 +106,13 @@ logicComparative (Int x) (ComparativeOp "==") (Int y) = x == y
 logicComparative (Float x) (ComparativeOp "==") (Float y) = x == x
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
+
+-- evalLogicExpression :: [Token] -> Bool
+
+
+-- forExpression :: Bool -> (a -> b) -> Bool
+-- forExpression a f =
+--     if a == true then forExpression a
+--     else False
+
+
