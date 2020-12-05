@@ -7,6 +7,7 @@ import Memory
 import Expression
 import Data.Functor.Identity
 
+import Data.List
 import Control.Monad.IO.Class
 import System.IO.Unsafe
 
@@ -60,19 +61,24 @@ ifElseStatement = do
 
 forStatement :: ParsecT [Token] [Type] IO([Token])
 forStatement = do
+    z <- getInput
     a <- keywordToken "for"
     b <- blockBeginToken "("
     c <- assign
     d <- logicExpression
+     if tokenToBool (d!!0)
+        then updateState ( symtableUpdateFlag 1 )
+    else updateState ( symtableUpdateFlag 0)
     e <- semicolonToken
     f <- justAssign
     l <- blockEndToken  ")"
-    z <- getInput
-    liftIO (print (takeUntil isKeywordToken z))
+
+    -- liftIO (print (z \\ takeUntil isKeywordToken z)) -- \\\\ é diferença total entre listas
+    -- setInput <- z ++ (z \\ takeUntil isKeywordToken z)
     m <- stmts
-    z <- getInput
     liftIO (print z)
     n <- keywordToken "endfor"
+    setInput z
     return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n]))
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
