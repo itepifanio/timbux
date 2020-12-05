@@ -28,14 +28,28 @@ getType ((MyType a id es):ts) variavel es2 =
     if id == variavel && es == es2 then convertTypexToPrimitiveType a
     else getType ts variavel es2
 
--- lookupScope :: [Type] -> String
+lookupLastScope :: [Type] -> String
 lookupLastScope [] = ""
 lookupLastScope ts = getScope $ last ts
 
+lookupLastScopeFrom :: String -> [Type] -> String
 lookupLastScopeFrom _      []    = ""
 lookupLastScopeFrom string (t:ts) = 
     if getScope t == string then lookupLastScopeFrom string ts
     else getScope t
+
+-- return only one [Type] or []
+lookupNameFrom :: String -> [Type] -> [Type]
+lookupNameFrom _      []    = []
+lookupNameFrom name (t:ts)  = 
+    if getName t == name then [t]
+    else lookupNameFrom name ts
+
+-- receive a state and check if is executing
+isExecuting :: [Type] -> Bool
+isExecuting types = canOperate $ lookupNameFrom "asdasldj==@#!" types
+
+-- lookupNameFrom name = 
 
 symtableInsertMany :: [Type] -> [Type] -> [Type]
 symtableInsertMany []     a = a
@@ -133,6 +147,10 @@ convertTypeTokensToArray (t:ts) nome escopo i
 getScope :: Type -> String
 getScope (MyType _ _ e)    = e
 getScope (MyArray _ _ e _) = e
+
+getName :: Type -> String
+getName (MyType _ n _)    = n
+getName (MyArray _ n _ _) = n
 
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
