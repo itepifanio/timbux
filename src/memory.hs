@@ -152,6 +152,11 @@ getName :: Type -> String
 getName (MyType _ n _)    = n
 getName (MyArray _ n _ _) = n
 
+getValue :: Token -> String
+getValue (Lexer.Int n)    = show n
+getValue (Lexer.Float n)  = show n
+getValue (Lexer.String n) = filter (/='"') n
+
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
 
