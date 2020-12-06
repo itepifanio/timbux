@@ -1,8 +1,12 @@
 Let crossProduct
     int somatorio = 0;
-    for (int i = 0; i < 10; i = i + 1)
+    int i = 0;
+
+    while(i<10)
         somatorio = somatorio + 1;
         somatorio = somatorio + 1;
-    endfor
+        i = i + 1;
+    endwhile
+   
     int n = 2 + 20;
 Ghbc

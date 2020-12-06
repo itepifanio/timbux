@@ -60,7 +60,25 @@ generalStatement stmt endstmt = do
     return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
-whileStatement = generalStatement "while" "endwhile"
+whileStatement = do
+                    z <- getInput
+                    a <- keywordToken "while"
+                    b <- blockBeginToken "("
+                    c <- logicExpression
+                    if tokenToBool (c!!0)
+                        then updateState (symtableUpdateFlag 1)
+                    else updateState ( symtableUpdateFlag 0)
+                    d <- blockEndToken  ")"
+                    e <- stmts
+                    f <- keywordToken "endwhile"
+                    y <- getState
+                    if isExecuting y then
+                        do 
+                            setInput z
+                            aaaaaa <- whileStatement
+                            return ((a:b:c) ++ [d] ++ e ++ [f]) <|> (return [])
+                    else 
+                        do return ((a:b:c) ++ [d] ++ e ++ [f]) <|> (return [])
 
 ifStatement :: ParsecT [Token] [Type] IO([Token])
 ifStatement = do
