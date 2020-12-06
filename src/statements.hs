@@ -90,16 +90,13 @@ forStatement = do
     e <- semicolonToken
     f <- justAssign
     l <- blockEndToken  ")"
-
-    -- liftIO (print (z \\ takeUntil isKeywordToken z)) -- \\\\ é diferença total entre listas
-    -- setInput <- z ++ (z \\ takeUntil isKeywordToken z)
     m <- stmts
     n <- keywordToken "endfor"
     y <- getState
     if isExecuting y then
         do 
             setInput z
-            aaaaaa <- forStatement
+            for <- forStatement
             return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
     else 
         do 
@@ -124,12 +121,9 @@ instAssign = do
           c <- assignToken
           d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
-          
           updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-        --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-        --   else fail ("Type don't match with type of variable " ++ getVariableName b)
-          s2 <- getState
-          liftIO (print s2)
+        --   s2 <- getState
+        --   liftIO (print s2)
           return (a:b:c:d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
@@ -141,8 +135,8 @@ justAssign = do
           if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
               then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
-          s2 <- getState
-          liftIO (print s2)
+        --   s2 <- getState
+        --   liftIO (print s2)
           return (a:b:c)
           
 function :: ParsecT [Token] [Type] IO [Token]
@@ -204,17 +198,6 @@ validarTipo t x =
                 else if (retornarPrimitiveType t == "float") && (retornarLexerTipo (last x) == "int") 
                     then True
                 else False
-
--- TODO::mover daqui
-isKeywordToken :: Token -> Bool
-isKeywordToken (Lexer.Keyword k) = True
-isKeywordToken _           = False
-
--- TODO::mover daqui
-takeUntil :: (a -> Bool) -> [a] -> [a]
-takeUntil _ [] = []
-takeUntil p (x:xs) = x : if p x then []
-                         else takeUntil p xs
 
 convert :: Token -> [Char] -> Token
 convert (PrimitiveType "int") x = (Lexer.Int (read x::Int))

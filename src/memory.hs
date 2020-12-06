@@ -59,10 +59,13 @@ symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
 symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableCanUpdate x a)
 
-symtableSearch :: [Type] -> String -> String -> Typex
+symtableSearch :: [Type] -> String -> String -> Type
 symtableSearch ((MyType a id es):ts) variavel es2 = 
-    if id == variavel && es == es2 then a
+    if id == variavel && es == es2 then (MyType a id es)
     else symtableSearch ts variavel es2
+symtableSearch ((MyArray d varName scope n):ts) varName' scope' =
+    if varName == varName' && scope == scope' then (MyArray d varName scope n)
+    else symtableSearch ts varName' scope'
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
@@ -122,6 +125,22 @@ fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)    nome escopo
 fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a) nome escopo
 fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)  nome escopo
 fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a) nome escopo
+
+-- Converte de type para um array de tokens 
+fromType :: Type -> [Token]
+fromType (MyType (MyInt a) n e)    = [Int a]
+fromType (MyType (MyFloat a) n e)  = [Float a]
+fromType (MyType (MyString a) n e) = [String a]
+fromType (MyArray array n e s)     = convertMyArrayDataToToken array
+
+convertMyArrayDataToToken :: [(Typex, [Int])] -> [Token]
+convertMyArrayDataToToken []     = [BlockBegin "[", BlockEnd "]"]
+convertMyArrayDataToToken array =
+    [BlockBegin "["] ++ (convertMyArrayTupleToTokens array) ++ [BlockEnd "]"]
+    
+convertMyArrayTupleToTokens :: [(Typex, [Int])] -> [Token]
+convertMyArrayTupleToTokens []     = []
+convertMyArrayTupleToTokens (x:xs) = [(fromTypeX $ fst x), Comma ","] ++ (convertMyArrayTupleToTokens xs)
 
 -- Converte um typex para um token
 fromTypeX :: Typex -> Token

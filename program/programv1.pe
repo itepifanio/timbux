@@ -1,8 +1,6 @@
 Let crossProduct
-    int somatorio = 0;
-    for (int i = 0; i < 10; i = i + 1)
-        somatorio = somatorio + 1;
+    array a = [1,2,3];
+    for (int i = 0; i < 3; i = i + 1)
+        print(a[i]);
     endfor
-    int n = input(int);
-    print(n);
 Ghbc

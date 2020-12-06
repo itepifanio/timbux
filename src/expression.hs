@@ -13,27 +13,27 @@ import System.IO.Unsafe
 expression :: ParsecT [Token] [Type] IO(Token)
 expression = try bin_expression <|> una_expression
 
-una_expression :: ParsecT [Token] [Type] IO(Token)
+-- una_expression :: ParsecT [Token] [Type] IO(Token)
 una_expression = literal_values <|> literal_from_name
 
-literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
+-- literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
 literal_values =  do
                     a <- intToken <|> floatToken <|> stringToken
-                    return (a)
+                    return [a]
 
-literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
+-- literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
                     a <- idToken
                     s1 <- getState
-                    return (fromTypeX ( symtableSearch s1 (getVariableName a) "" )) 
+                    return (fromType ( symtableSearch s1 (getVariableName a) "" )) 
 
-bin_expression :: ParsecT [Token] [Type] IO(Token)
+-- bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
                    n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
                    result <- eval_remaining n1
                    return (result)
 
-eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
+-- eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
                       n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
