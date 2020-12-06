@@ -153,6 +153,7 @@ instAssign = do
           c <- assignToken
           d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
+          liftIO( print d)
           if snd (symtableSearch s1 (getVariableName b) (lookupLastScope s1)) then
             updateState (symtableCanUpdate (fromToken d (getVariableName b) (lookupLastScope s1)))
           else 

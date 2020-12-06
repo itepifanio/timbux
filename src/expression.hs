@@ -61,9 +61,12 @@ arrayAccess =
 
 literal_from_array:: ParsecT [Token] [Type] IO(Token)
 literal_from_array =  do
-                    a <- arrayAccess
+                    a <- idToken
+                    b <- blockBeginToken "["
+                    c <- intToken
+                    d <- blockEndToken "]"
                     s1 <- getState
-                    return (fromTypeX ( fst (symtableArraySearch s1 (getVariableName (a!!0)) (a!!2) "" ))) 
+                    return (fromTypeX ( fst (symtableArraySearch s1 (getVariableName a) c "" ))) 
 
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
