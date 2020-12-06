@@ -1,16 +1,5 @@
 Let crossProduct
-    int somatorio = 0;
-    int i = 0;
+    boolean a = true;
+    boolean b = false;
 
-    while(i<10)
-        somatorio = somatorio + 1;
-        somatorio = somatorio + 1;
-        i = i + 1;
-    endwhile
-    print("Somatorio");
-    print(somatorio);
-    
-    int n = 2 + 20;
-    int n = input(int);
-    print(n);
 Ghbc

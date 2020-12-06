@@ -74,12 +74,12 @@ logic_remaining bool = (do
     return (result)) <|> (return [boolToToken bool])
 
 boolToToken :: Bool -> Token 
-boolToToken True = (Boolean "True")
-boolToToken False = (Boolean "False")
+boolToToken True = (Boolean "true")
+boolToToken False = (Boolean "false")
 
 tokenToBool :: Token -> Bool
-tokenToBool (Boolean "True") = True
-tokenToBool (Boolean "False") = False
+tokenToBool (Boolean "true") = True
+tokenToBool (Boolean "false") = False
 
 logicOperation :: Bool -> Token -> Bool -> Bool
 logicOperation a (LogicalOp "&&") b = a && b

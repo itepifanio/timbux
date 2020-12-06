@@ -7,12 +7,12 @@ import Lexer
 
 -- Definição dos demais tipos
 -- Seja um tipo inteiro, sua represetnação será:
--- MyType (MyInt 1) "nomeDaVariavel" "escopo"
+-- MyType (MyInt 1) "nomeDaVariavel" "escopo"S
 
 data Typex = MyInt Int         |
              MyFloat Double    |
              MyString String   |
-             MyBoolean String
+             MyBoolean Bool
              deriving (Show)
                    
 data Type = MyType Typex String String                   |
@@ -124,14 +124,14 @@ fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)     nome escopo
 fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a)  nome escopo
 fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)   nome escopo
 fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a)  nome escopo
-fromTokenX (Lexer.Boolean a) nome escopo = MyType (MyString a)  nome escopo
+fromTokenX (Lexer.Boolean a) nome escopo = MyType (MyBoolean (stringToBool a) )  nome escopo
 
 -- Converte um typex para um token
 fromTypeX :: Typex -> Token
 fromTypeX (MyInt a) = Int a
 fromTypeX (MyFloat a) = Float a
 fromTypeX (MyString a) = String a
-fromTypeX (MyBoolean a) = String a
+fromTypeX (MyBoolean a) = Boolean (boolToString a)
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -180,6 +180,14 @@ isIdToken _               = False
 
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
+
+stringToBool :: String -> Bool
+stringToBool "true" = True
+stringToBool "false" = False
+
+boolToString :: Bool ->String
+boolToString True  = "true"
+boolToString False = "false"
 
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
