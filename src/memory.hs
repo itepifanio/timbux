@@ -177,6 +177,10 @@ isIdToken _               = False
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
 
+genericValue :: Token -> Token
+genericValue (PrimitiveType "int") = (Lexer.Int 0)
+genericValue (PrimitiveType "float") = (Lexer.Float 0.0)
+genericValue (PrimitiveType "string") = (Lexer.String "")
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 

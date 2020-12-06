@@ -33,8 +33,11 @@ inputStmt = do
     c <- primitiveTypeToken -- o usuário deve informar o tipo a ser lido
     d <- blockEndToken ")"
     s1 <- getState
-    input <- liftIO (hGetLine stdin)
-    return ([convert c input])
+    if canOperate s1 then
+        do
+            input <- liftIO (hGetLine stdin)
+            return ([convert c input])
+    else return [(genericValue c)]
 
 printStmt :: ParsecT [Token] [Type] IO([Token])
 printStmt = do 
