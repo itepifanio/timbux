@@ -102,7 +102,9 @@ forStatement = do
             aaaaaa <- forStatement
             return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
     else 
-        do return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
+        do 
+            updateflag <- updateState (symtableUpdateFlag 1)
+            return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
@@ -122,6 +124,7 @@ instAssign = do
           c <- assignToken
           d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
+          
           updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
         --   else fail ("Type don't match with type of variable " ++ getVariableName b)
