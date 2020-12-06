@@ -32,8 +32,9 @@ inputStmt = do
     b <- blockBeginToken "("
     c <- primitiveTypeToken -- o usuário deve informar o tipo a ser lido
     d <- blockEndToken ")"
-    input <- (liftIO (hGetLine stdin))
-    return ([(convert c input)])
+    s1 <- getState
+    input <- liftIO (hGetLine stdin)
+    return ([convert c input])
 
 printStmt :: ParsecT [Token] [Type] IO([Token])
 printStmt = do 
@@ -42,7 +43,10 @@ printStmt = do
     c <- expression
     d <- blockEndToken ")"
     e <- semicolonToken
-    liftIO (putStrLn (getValue c))
+    s1 <- getState
+    if canOperate s1 
+        then liftIO (putStrLn (getValue c))
+    else updateState (symtableUpdateFlag 0)
     return (a:b:c:[d] ++ [e])
 
 generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
@@ -51,12 +55,15 @@ generalStatement stmt endstmt = do
     b <- blockBeginToken "("
     c <- logicExpression
     d <- blockEndToken    ")"
-    if tokenToBool (c!!0)
+    s1 <- getState
+    if canOperate s1 && tokenToBool (c!!0)
         then updateState ( symtableUpdateFlag 1 )
     else updateState ( symtableUpdateFlag 0)
     e <- stmts
     f <- keywordToken endstmt
-    updateState ( symtableUpdateFlag 1)
+    if canOperate s1 then 
+        updateState ( symtableUpdateFlag 1)
+    else updateState ( symtableUpdateFlag 0)
     return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
@@ -84,9 +91,10 @@ forStatement = do
     b <- blockBeginToken "("
     c <- assign
     d <- logicExpression
+    liftIO(print d)
     if tokenToBool (d!!0)
         then updateState (symtableUpdateFlag 1)
-    else updateState ( symtableUpdateFlag 0)
+    else updateState (symtableUpdateFlag 0)
     e <- semicolonToken
     f <- justAssign
     l <- blockEndToken  ")"
@@ -96,14 +104,16 @@ forStatement = do
     m <- stmts
     n <- keywordToken "endfor"
     y <- getState
-    if isExecuting y then
+    
+    if canOperate y then
         do 
             setInput z
+            updateState (symtableUpdateFlag 0) -- para não executar o assign e justAssign a cada intereção
             aaaaaa <- forStatement
             return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
     else 
         do 
-            updateflag <- updateState (symtableUpdateFlag 1)
+            updateState (symtableUpdateFlag 1)
             return ((a:b:c) ++ d ++ [e] ++ f ++ (l:m++[n])) <|> (return [])
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
@@ -124,10 +134,10 @@ instAssign = do
           c <- assignToken
           d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
-          
-          updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-        --   if validarTipo a d then updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))
-        --   else fail ("Type don't match with type of variable " ++ getVariableName b)
+          if snd (symtableSearch s1 (getVariableName b) (lookupLastScope s1)) then
+            updateState (symtableCanUpdate (fromToken d (getVariableName b) (lookupLastScope s1)))
+          else 
+            updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
           s2 <- getState
           liftIO (print s2)
           return (a:b:c:d)
