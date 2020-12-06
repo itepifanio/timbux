@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 stmts :: ParsecT [Token] [Type] IO [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
+        first <- arrayAccess <|> assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -120,9 +120,6 @@ forStatement = do
     e <- semicolonToken
     f <- justAssign
     l <- blockEndToken  ")"
-
-    -- liftIO (print (z \\ takeUntil isKeywordToken z)) -- \\\\ é diferença total entre listas
-    -- setInput <- z ++ (z \\ takeUntil isKeywordToken z)
     m <- stmts
     n <- keywordToken "endfor"
     y <- getState
@@ -174,7 +171,7 @@ justAssign = do
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
           return (a:b:c)
-          
+
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
     a <- funToken
@@ -207,6 +204,22 @@ arguments = (do
         b <- idToken
         c <- remainingArguments
         return (a:b:c)) <|> (return [])
+
+-- arrayAccess :: ParsecT [Token] [Type] IO [Token]
+-- arrayAccess = 
+--     (do
+--     a <- idToken
+--     b <- blockBeginToken "["
+--     c <- intToken
+--     d <- blockEndToken "]"
+--     e <- semicolonToken
+--     return (a:b:c:d:e:[])) <|>
+--     (do
+--     a <- idToken
+--     b <- blockBeginToken "["
+--     c <- intToken
+--     d <- blockEndToken "]"
+--     return (a:b:c:d:[]))
 
 remainingArguments :: ParsecT [Token] [Type] IO [Token]
 remainingArguments = (do

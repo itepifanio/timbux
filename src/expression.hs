@@ -5,16 +5,17 @@ import Token
 import Text.Parsec
 import Memory
 
+
 import Control.Monad.IO.Class
 import System.IO.Unsafe
 
 -- funções para o avaliador de expressões
 
 expression :: ParsecT [Token] [Type] IO(Token)
-expression = try bin_expression <|> una_expression
+expression = try bin_expression <|> una_expression 
 
 una_expression :: ParsecT [Token] [Type] IO(Token)
-una_expression = literal_values <|> literal_from_name
+una_expression = literal_from_array <|> literal_values <|> literal_from_name
 
 literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
 literal_values =  do
@@ -26,6 +27,44 @@ literal_from_name =  do
                     a <- idToken
                     s1 <- getState
                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" ))) 
+
+arrayAccess :: ParsecT [Token] [Type] IO [Token]
+arrayAccess = 
+    (do
+    a <- idToken
+    b <- blockBeginToken "["
+    c <- intToken
+    d <- blockEndToken "]"
+    e <- semicolonToken
+    return (a:b:c:d:e:[])) <|>
+    (do
+    a <- idToken
+    b <- blockBeginToken "["
+    c <- intToken
+    d <- blockEndToken "]"
+    return (a:b:c:d:[]))
+-- arrayAccess :: ParsecT [Token] [Type] IO [Token]
+-- arrayAccess = 
+--     do
+--     z <- getInput
+--     a <- idToken
+--     liftIO(print z)
+--     liftIO(print "oie 2")
+--     b <- blockBeginToken "["
+--     c <- intToken
+--     d <- blockEndToken "]"
+--     return (a:b:c:d:[])
+    -- open <- blockBeginToken "["
+    --       values <- digitSequence <|> arraySequence
+    --       close <- blockEndToken "]"
+    --       return (open:values++[close])
+
+literal_from_array:: ParsecT [Token] [Type] IO(Token)
+literal_from_array =  do
+                    a <- arrayAccess
+                    s1 <- getState
+                    return (fromTypeX ( fst (symtableArraySearch s1 (getVariableName (a!!0)) (a!!2) "" ))) 
+
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
@@ -107,12 +146,6 @@ logicComparative (Float x) (ComparativeOp "==") (Float y) = x == x
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
 
--- evalLogicExpression :: [Token] -> Bool
 
-
--- forExpression :: Bool -> (a -> b) -> Bool
--- forExpression a f =
---     if a == true then forExpression a
---     else False
 
 

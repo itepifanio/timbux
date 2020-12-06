@@ -65,6 +65,12 @@ symtableSearch ((MyType a id es):ts) variavel es2 =
     if id == variavel && es == es2 then (a, True)
     else symtableSearch ts variavel es2
 
+symtableArraySearch :: [Type] -> String -> Token -> String -> (Typex, Bool)
+symtableArraySearch [] a b c = ((MyInt 0), False)
+symtableArraySearch ((MyType a id es):ts) variavel index es2 = 
+    if id == variavel && es == es2 then (a, True)
+    else symtableSearch ts variavel es2
+
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
 symtableInsert symbol table = if canOperate table then table++[symbol] else table
