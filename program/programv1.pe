@@ -7,6 +7,10 @@ Let crossProduct
         somatorio = somatorio + 1;
         i = i + 1;
     endwhile
-   
+    print("Somatorio");
+    print(somatorio);
+    
     int n = 2 + 20;
+    int n = input(int);
+    print(n);
 Ghbc
