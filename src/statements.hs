@@ -70,7 +70,27 @@ generalStatement stmt endstmt = do
     return ((a:b:c) ++ [d] ++ e ++ [f])
 
 whileStatement :: ParsecT [Token] [Type] IO([Token])
-whileStatement = generalStatement "while" "endwhile"
+whileStatement = do
+                    z <- getInput
+                    a <- keywordToken "while"
+                    b <- blockBeginToken "("
+                    c <- logicExpression
+                    if tokenToBool (c!!0)
+                        then updateState (symtableUpdateFlag 1)
+                    else updateState ( symtableUpdateFlag 0)
+                    d <- blockEndToken  ")"
+                    e <- stmts
+                    f <- keywordToken "endwhile"
+                    y <- getState
+                    if isExecuting y then
+                        do 
+                            setInput z
+                            aaaaaa <- whileStatement
+                            return ((a:b:c) ++ [d] ++ e ++ [f]) <|> (return [])
+                    else 
+                        do 
+                            updateState (symtableUpdateFlag 1)
+                            return ((a:b:c) ++ [d] ++ e ++ [f]) <|> (return [])
 
 ifStatement :: ParsecT [Token] [Type] IO([Token])
 ifStatement = do
@@ -94,7 +114,6 @@ forStatement = do
     b <- blockBeginToken "("
     c <- assign
     d <- logicExpression
-    liftIO(print d)
     if tokenToBool (d!!0)
         then updateState (symtableUpdateFlag 1)
     else updateState (symtableUpdateFlag 0)
@@ -142,7 +161,6 @@ instAssign = do
           else 
             updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
           s2 <- getState
-          liftIO (print s2)
           return (a:b:c:d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
@@ -155,7 +173,6 @@ justAssign = do
               then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
-          liftIO (print s2)
           return (a:b:c)
           
 function :: ParsecT [Token] [Type] IO [Token]

@@ -3,10 +3,10 @@ Let problemaDois
     int contt = 0;
     int conttt = 0;
     int contttt = 0;
+    
+    int x = input(int);
 
-    for(int x = 0; x >= 0; x = x) 
-        x = input(int);
-        
+    while(x >= 0)         
         if (x >= 0 && x <= 25)
             cont = cont + 1;
         endif
@@ -19,10 +19,11 @@ Let problemaDois
             conttt = conttt + 1;
         endif
 
-        if(x > 76 && x <= 100)
+        if(x > 75 && x <= 100)
             contttt = contttt + 1;
         endif
-    endfor
+        x = input(int);
+    endwhile
 
     print(cont);
     print(contt);
