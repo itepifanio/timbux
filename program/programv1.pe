@@ -4,5 +4,5 @@ Let crossProduct
         somatorio = somatorio + 1;
         somatorio = somatorio + 1;
     endfor
-    int n = input(int);
+    int n = 2 + 20;
 Ghbc
