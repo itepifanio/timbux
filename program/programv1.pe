@@ -2,4 +2,7 @@ Let crossProduct
     boolean a = true;
     boolean b = false;
 
+    if(true == true)
+        int c = 0;
+    endif
 Ghbc
