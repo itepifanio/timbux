@@ -10,34 +10,34 @@ import System.IO.Unsafe
 
 -- funções para o avaliador de expressões
 
-expression :: ParsecT [Token] [Type] IO(Token)
+expression :: ParsecT [Token] [Type] IO [Token]
 expression = try bin_expression <|> una_expression
 
--- una_expression :: ParsecT [Token] [Type] IO(Token)
+una_expression :: ParsecT [Token] [Type] IO [Token]
 una_expression = literal_values <|> literal_from_name
 
--- literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
+literal_values :: ParsecT [Token] [Type] IO [Token]  -- TODO
 literal_values =  do
-                    a <- intToken <|> floatToken <|> stringToken
-                    return [a]
+                    a <- many $ intToken <|> floatToken <|> stringToken
+                    return (a)
 
--- literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
+literal_from_name :: ParsecT [Token] [Type] IO [Token] -- TODO
 literal_from_name =  do
                     a <- idToken
                     s1 <- getState
                     return (fromType ( symtableSearch s1 (getVariableName a) "" )) 
 
--- bin_expression :: ParsecT [Token] [Type] IO(Token)
+bin_expression :: ParsecT [Token] [Type] IO [Token]
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                   n1 <- many (intToken <|> floatToken <|> stringToken) <|> literal_from_name
                    result <- eval_remaining n1
                    return (result)
 
--- eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
+eval_remaining :: [Token] -> ParsecT [Token] [Type] IO [Token]
 eval_remaining n1 = do
-                      op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
-                      result <- eval_remaining (eval n1 op n2)
+                      op <- many $ addToken <|> subToken <|> multToken
+                      n2 <- many(intToken <|> floatToken <|> stringToken) <|> literal_from_name
+                      result <- eval_remaining (map (\x -> eval (first x) (second x) (third x)) (zip3 n1 op n2))
                       return (result) 
                     <|> return (n1) 
 
@@ -56,20 +56,20 @@ eval (Int x)    (Sub)   (Float y) = Float (fromIntegral x - y)
 eval (Int x)    (Mult)  (Float y) = Float (fromIntegral x * y)
 eval (String x) (Add)   (String y)= String (x ++ y)
 
-logicExpression :: ParsecT [Token] [Type] IO([Token])
+logicExpression :: ParsecT [Token] [Type] IO [Token]
 logicExpression = do
-    a <- floatToken <|> intToken <|> expression
-    b <- comparativeOpToken
-    c <- floatToken <|> intToken <|> expression
-    result <- logic_remaining (logicComparative a b c)
+    a <- many(floatToken <|> intToken) <|> expression
+    b <- many $ comparativeOpToken
+    c <- many(floatToken <|> intToken) <|> expression
+    result <- logic_remaining $ all (== True) (map (\x -> logicComparative (first x) (second x) (third x)) (zip3 a b c))
     return result
 
-logic_remaining :: Bool -> ParsecT [Token] [Type] IO([Token])
+logic_remaining :: Bool -> ParsecT [Token] [Type] IO [Token]
 logic_remaining bool = (do
-    a <- logicalOpToken 
-    b <- floatToken <|> intToken <|> expression
-    c <- comparativeOpToken
-    d <- floatToken <|> intToken <|> expression
+    a <- many $ logicalOpToken 
+    b <- many(floatToken <|> intToken)  <|> expression
+    c <- many $ comparativeOpToken
+    d <- many (floatToken <|> intToken) <|> expression
     result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
     return (result)) <|> (return [boolToToken bool])
 
@@ -107,12 +107,7 @@ logicComparative (Float x) (ComparativeOp "==") (Float y) = x == x
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
 
--- evalLogicExpression :: [Token] -> Bool
-
-
--- forExpression :: Bool -> (a -> b) -> Bool
--- forExpression a f =
---     if a == true then forExpression a
---     else False
-
-
+-- TODO::mover daqui
+first  (a, _, _) = a
+second (_, a, _) = a
+third  (_, _, a) = a
