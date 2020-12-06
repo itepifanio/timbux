@@ -19,6 +19,7 @@ una_expression = literal_values <|> literal_from_name
 literal_values :: ParsecT [Token] [Type] IO [Token]  -- TODO
 literal_values =  do
                     a <- many $ intToken <|> floatToken <|> stringToken
+                    liftIO (print "literal_values")
                     return (a)
 
 literal_from_name :: ParsecT [Token] [Type] IO [Token] -- TODO
@@ -38,6 +39,7 @@ eval_remaining n1 = do
                       op <- many $ addToken <|> subToken <|> multToken
                       n2 <- many(intToken <|> floatToken <|> stringToken) <|> literal_from_name
                       result <- eval_remaining (map (\x -> eval (first x) (second x) (third x)) (zip3 n1 op n2))
+                      liftIO (print "eval_remaining")
                       return (result) 
                     <|> return (n1) 
 
@@ -70,7 +72,7 @@ logic_remaining bool = (do
     b <- many(floatToken <|> intToken)  <|> expression
     c <- many $ comparativeOpToken
     d <- many (floatToken <|> intToken) <|> expression
-    result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
+    result <- logic_remaining  (logicOperation bool (a!!0) (all (==True) (map (\x -> logicComparative (first x) (second x) (third x)) (zip3 b c d))))
     return (result)) <|> (return [boolToToken bool])
 
 boolToToken :: Bool -> Token 

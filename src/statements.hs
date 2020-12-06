@@ -5,6 +5,7 @@ import Token
 import Text.Parsec
 import Memory
 import Expression
+import Data.List
 import Data.Functor.Identity
 import Control.Monad.IO.Class
 import System.IO
@@ -35,15 +36,15 @@ inputStmt = do
     input <- (liftIO (hGetLine stdin))
     return ([(convert c input)])
 
-printStmt :: ParsecT [Token] [Type] IO([Token])
+printStmt :: ParsecT [Token] [Type] IO [Token]
 printStmt = do 
     a <- keywordToken "print"
     b <- blockBeginToken "("
     c <- expression
     d <- blockEndToken ")"
     e <- semicolonToken
-    liftIO (putStrLn (getValue c))
-    return (a:b:c:[d] ++ [e])
+    liftIO (putStrLn $ concat(intersperse " " $ map getValue c))
+    return ((a:b:c)++[d]++[e])
 
 generalStatement :: String -> String -> ParsecT [Token] [Type] IO([Token])
 generalStatement stmt endstmt = do
@@ -105,8 +106,8 @@ forStatement = do
 
 singletonToken:: ParsecT [Token] [Type] IO([Token])
 singletonToken = do
-            a <- expression <|> booleanToken
-            return([a])
+            a <- expression <|> many(booleanToken)
+            return(a)
 
 assign :: ParsecT [Token] [Type] IO([Token])
 assign = do
