@@ -59,9 +59,10 @@ symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
 symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableCanUpdate x a)
 
-symtableSearch :: [Type] -> String -> String -> Typex
+symtableSearch :: [Type] -> String -> String -> (Typex, Bool)
+symtableSearch [] a b = ((MyInt 0), False)
 symtableSearch ((MyType a id es):ts) variavel es2 = 
-    if id == variavel && es == es2 then a
+    if id == variavel && es == es2 then (a, True)
     else symtableSearch ts variavel es2
 
 symtableInsert :: Type -> [Type] -> [Type]
@@ -176,6 +177,10 @@ isIdToken _               = False
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
 
+genericValue :: Token -> Token
+genericValue (PrimitiveType "int") = (Lexer.Int 0)
+genericValue (PrimitiveType "float") = (Lexer.Float 0.0)
+genericValue (PrimitiveType "string") = (Lexer.String "")
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 

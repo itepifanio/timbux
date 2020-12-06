@@ -25,7 +25,7 @@ literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
                     a <- idToken
                     s1 <- getState
-                    return (fromTypeX ( symtableSearch s1 (getVariableName a) "" )) 
+                    return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" ))) 
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
