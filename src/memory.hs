@@ -9,9 +9,10 @@ import Lexer
 -- Seja um tipo inteiro, sua represetnação será:
 -- MyType (MyInt 1) "nomeDaVariavel" "escopo"
 
-data Typex = MyInt Int       |
-             MyFloat Double  |
-             MyString String 
+data Typex = MyInt Int         |
+             MyFloat Double    |
+             MyString String   |
+             MyBoolean String
              deriving (Show)
                    
 data Type = MyType Typex String String                   |
@@ -22,6 +23,7 @@ convertTypexToPrimitiveType :: Typex -> Token
 convertTypexToPrimitiveType (MyInt _) = PrimitiveType "int"
 convertTypexToPrimitiveType (MyFloat _) = PrimitiveType "float"
 convertTypexToPrimitiveType (MyString _) = PrimitiveType "string"
+convertTypexToPrimitiveType (MyBoolean _) = PrimitiveType "boolean"
 
 getType :: [Type] -> String -> String -> Token
 getType ((MyType a id es):ts) variavel es2 = 
@@ -118,16 +120,18 @@ fromToken (x:xs) nome escopo
 
 -- Converte um token em um datatype Type sem ser o array
 fromTokenX :: Token -> String -> String -> Type
-fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)    nome escopo
-fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a) nome escopo
-fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)  nome escopo
-fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)     nome escopo
+fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a)  nome escopo
+fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)   nome escopo
+fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a)  nome escopo
+fromTokenX (Lexer.Boolean a) nome escopo = MyType (MyString a)  nome escopo
 
 -- Converte um typex para um token
 fromTypeX :: Typex -> Token
 fromTypeX (MyInt a) = Int a
 fromTypeX (MyFloat a) = Float a
 fromTypeX (MyString a) = String a
+fromTypeX (MyBoolean a) = String a
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -156,6 +160,7 @@ getValue :: Token -> String
 getValue (Lexer.Int n)    = show n
 getValue (Lexer.Float n)  = show n
 getValue (Lexer.String n) = filter (/='"') n
+getValue (Lexer.Boolean n)= filter (/='"') n
 
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
