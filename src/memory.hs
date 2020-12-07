@@ -7,12 +7,11 @@ import Lexer
 
 -- Definição dos demais tipos
 -- Seja um tipo inteiro, sua represetnação será:
--- MyType (MyInt 1) "nomeDaVariavel" "escopo"S
+-- MyType (MyInt 1) "nomeDaVariavel" "escopo"
 
-data Typex = MyInt Int         |
-             MyFloat Double    |
-             MyString String   |
-             MyBoolean Bool
+data Typex = MyInt Int       |
+             MyFloat Double  |
+             MyString String 
              deriving (Show)
                    
 data Type = MyType Typex String String                   |
@@ -23,7 +22,6 @@ convertTypexToPrimitiveType :: Typex -> Token
 convertTypexToPrimitiveType (MyInt _) = PrimitiveType "int"
 convertTypexToPrimitiveType (MyFloat _) = PrimitiveType "float"
 convertTypexToPrimitiveType (MyString _) = PrimitiveType "string"
-convertTypexToPrimitiveType (MyBoolean _) = PrimitiveType "boolean"
 
 getType :: [Type] -> String -> String -> Token
 getType ((MyType a id es):ts) variavel es2 = 
@@ -61,9 +59,10 @@ symtableUpdateMany :: [Type] -> [Type] -> [Type]
 symtableUpdateMany []     a = a
 symtableUpdateMany (x:xs) a = symtableUpdateMany xs (symtableCanUpdate x a)
 
-symtableSearch :: [Type] -> String -> String -> Typex
+symtableSearch :: [Type] -> String -> String -> (Typex, Bool)
+symtableSearch [] a b = ((MyInt 0), False)
 symtableSearch ((MyType a id es):ts) variavel es2 = 
-    if id == variavel && es == es2 then a
+    if id == variavel && es == es2 then (a, True)
     else symtableSearch ts variavel es2
 
 symtableInsert :: Type -> [Type] -> [Type]
@@ -120,18 +119,16 @@ fromToken (x:xs) nome escopo
 
 -- Converte um token em um datatype Type sem ser o array
 fromTokenX :: Token -> String -> String -> Type
-fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)     nome escopo
-fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a)  nome escopo
-fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)   nome escopo
-fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a)  nome escopo
-fromTokenX (Lexer.Boolean a) nome escopo = MyType (MyBoolean (stringToBool a) )  nome escopo
+fromTokenX (Lexer.Int  a)    nome escopo = MyType (MyInt a)    nome escopo
+fromTokenX (Lexer.Name a)    nome escopo = MyType (MyString a) nome escopo
+fromTokenX (Lexer.Float a)   nome escopo = MyType (MyFloat a)  nome escopo
+fromTokenX (Lexer.String a)  nome escopo = MyType (MyString a) nome escopo
 
 -- Converte um typex para um token
 fromTypeX :: Typex -> Token
 fromTypeX (MyInt a) = Int a
 fromTypeX (MyFloat a) = Float a
 fromTypeX (MyString a) = String a
-fromTypeX (MyBoolean a) = Boolean (boolToString a)
 
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
@@ -160,7 +157,6 @@ getValue :: Token -> String
 getValue (Lexer.Int n)    = show n
 getValue (Lexer.Float n)  = show n
 getValue (Lexer.String n) = filter (/='"') n
-getValue (Lexer.Boolean n)= filter (/='"') n
 
 getVariableName :: Token -> String
 getVariableName (Lexer.Name n) = n
@@ -181,14 +177,10 @@ isIdToken _               = False
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
 
-stringToBool :: String -> Bool
-stringToBool "true" = True
-stringToBool "false" = False
-
-boolToString :: Bool ->String
-boolToString True  = "true"
-boolToString False = "false"
-
+genericValue :: Token -> Token
+genericValue (PrimitiveType "int") = (Lexer.Int 0)
+genericValue (PrimitiveType "float") = (Lexer.Float 0.0)
+genericValue (PrimitiveType "string") = (Lexer.String "")
 
 -- symtableDeleteScope :: String -> [Type] -> [Type]
 

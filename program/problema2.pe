@@ -1,24 +1,32 @@
 Let problemaDois
-    int x = -1;
+    int cont = 0;
+    int contt = 0;
+    int conttt = 0;
+    int contttt = 0;
+    
+    int x = input(int);
 
-    if (x < 0)
-        int a = 10;
-        x = -2;
-    endif
+    while(x >= 0)         
+        if (x >= 0 && x <= 25)
+            cont = cont + 1;
+        endif
 
-    if(x > 0 && x < 25)
-        x = 1;
-    endif
+        if(x > 25 && x <= 50)
+            contt = contt + 1;
+        endif
 
-    if(x > 25 && x < 50)
-        x = 2;
-    endif
+        if(x > 50 && x <= 75)
+            conttt = conttt + 1;
+        endif
 
-    if(x > 50 && x < 75)
-        x = 3;
-    endif
+        if(x > 75 && x <= 100)
+            contttt = contttt + 1;
+        endif
+        x = input(int);
+    endwhile
 
-    if(x > 76 && x < 100)
-        x = 4;
-    endif
+    print(cont);
+    print(contt);
+    print(conttt);
+    print(contttt);
 Ghbc
