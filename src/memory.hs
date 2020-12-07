@@ -64,6 +64,7 @@ symtableSearch [] a b = ((MyInt 0), False)
 symtableSearch ((MyType a id es):ts) variavel es2 = 
     if id == variavel && es == es2 then (a, True)
     else symtableSearch ts variavel es2
+symtableSearch ((MyArray a id es sla):ts) variavel es2 = symtableSearch ts variavel es2
 
 searchIndex :: [Int] -> Int -> Bool
 searchIndex [] _ = False

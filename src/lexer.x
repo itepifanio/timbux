@@ -7,7 +7,7 @@ import System.IO.Unsafe
 %wrapper "basic"
 
 $digit = 0-9           -- digits
-$alpha = [a-zA-Z]      -- alphabetic characters
+$alpha = [a-zA-Z0-9]      -- alphabetic characters
 $op = [\#\+\-\*]       -- operacoes
 $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]

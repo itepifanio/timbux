@@ -12,7 +12,7 @@ import System.IO.Unsafe
 -- funções para o avaliador de expressões
 
 expression :: ParsecT [Token] [Type] IO(Token)
-expression = una_expression <|> bin_expression 
+expression = try bin_expression  <|> una_expression
 
 una_expression :: ParsecT [Token] [Type] IO(Token)
 una_expression = literal_from_array <|> literal_values <|> literal_from_name
@@ -74,14 +74,14 @@ getValueInt (Lexer.Int a) = a
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                   n1 <- literal_from_array <|> intToken <|> floatToken <|> stringToken <|> literal_from_name
                    result <- eval_remaining n1
                    return (result)
 
 eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                      n2 <- literal_from_array <|> intToken <|> floatToken <|> stringToken <|> literal_from_name
                       result <- eval_remaining (eval n1 op n2)
                       return (result) 
                     <|> return (n1) 
