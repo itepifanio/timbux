@@ -12,7 +12,7 @@ import System.IO.Unsafe
 -- funções para o avaliador de expressões
 
 expression :: ParsecT [Token] [Type] IO(Token)
-expression = try bin_expression <|> una_expression 
+expression = una_expression <|> bin_expression 
 
 una_expression :: ParsecT [Token] [Type] IO(Token)
 una_expression = literal_from_array <|> literal_values <|> literal_from_name
@@ -24,6 +24,7 @@ literal_values =  do
 
 literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
+                    s <- getInput
                     a <- idToken
                     s1 <- getState
                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" ))) 
@@ -66,8 +67,10 @@ literal_from_array =  do
                     c <- intToken
                     d <- blockEndToken "]"
                     s1 <- getState
-                    return (fromTypeX ( fst (symtableArraySearch s1 (getVariableName a) c "" ))) 
+                    return (fromTypeX ( fst (symtableArraySearch s1 (getValueInt c) (getVariableName a) "" ))) 
 
+getValueInt :: Token -> Int
+getValueInt (Lexer.Int a) = a
 
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do

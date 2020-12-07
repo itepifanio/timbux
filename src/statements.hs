@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 stmts :: ParsecT [Token] [Type] IO [Token]
 stmts = do
-        first <- arrayAccess <|> assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -153,11 +153,10 @@ instAssign = do
           c <- assignToken
           d <- singletonToken <|> array <|> inputStmt
           s1 <- getState
-          liftIO( print d)
+          liftIO( print s1)
           if snd (symtableSearch s1 (getVariableName b) (lookupLastScope s1)) then
             updateState (symtableCanUpdate (fromToken d (getVariableName b) (lookupLastScope s1)))
-          else 
-            updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
+          else updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
           s2 <- getState
           return (a:b:c:d)
 
