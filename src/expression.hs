@@ -58,28 +58,28 @@ eval (String x) (Add)   (String y)= String (x ++ y)
 
 logicExpression :: ParsecT [Token] [Type] IO([Token])
 logicExpression = do
-    a <- floatToken <|> intToken <|> expression
+    a <- floatToken <|> intToken <|> expression <|> booleanToken
     b <- comparativeOpToken
-    c <- floatToken <|> intToken <|> expression
+    c <- floatToken <|> intToken <|> expression <|> booleanToken
     result <- logic_remaining (logicComparative a b c)
     return result
 
 logic_remaining :: Bool -> ParsecT [Token] [Type] IO([Token])
 logic_remaining bool = (do
     a <- logicalOpToken 
-    b <- floatToken <|> intToken <|> expression
+    b <- floatToken <|> intToken <|> expression <|> booleanToken
     c <- comparativeOpToken
-    d <- floatToken <|> intToken <|> expression
+    d <- floatToken <|> intToken <|> expression <|> booleanToken
     result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
     return (result)) <|> (return [boolToToken bool])
 
 boolToToken :: Bool -> Token 
-boolToToken True = (Boolean "True")
-boolToToken False = (Boolean "False")
+boolToToken True = (Boolean "true")
+boolToToken False = (Boolean "false")
 
 tokenToBool :: Token -> Bool
-tokenToBool (Boolean "True") = True
-tokenToBool (Boolean "False") = False
+tokenToBool (Boolean "true") = True
+tokenToBool (Boolean "false") = False
 
 logicOperation :: Bool -> Token -> Bool -> Bool
 logicOperation a (LogicalOp "&&") b = a && b
@@ -87,25 +87,28 @@ logicOperation a (LogicalOp "||") b = a || b
 
 logicComparative :: Token -> Token -> Token -> Bool
 logicComparative (Int x) (ComparativeOp ">") (Int y) = x > y
-logicComparative (Float x) (ComparativeOp ">") (Float y) = x > x
+logicComparative (Float x) (ComparativeOp ">") (Float y) = x > y
 logicComparative (Int x) (ComparativeOp ">") (Float y) = fromIntegral x > y
 logicComparative (Float x) (ComparativeOp ">") (Int y) = x > fromIntegral y
 logicComparative (Int x) (ComparativeOp ">=") (Int y) = x >= y
-logicComparative (Float x) (ComparativeOp ">=") (Float y) = x >= x
+logicComparative (Float x) (ComparativeOp ">=") (Float y) = x >= y
 logicComparative (Int x) (ComparativeOp ">=") (Float y) = fromIntegral x >= y
 logicComparative (Float x) (ComparativeOp ">=") (Int y) = x >= fromIntegral y
 logicComparative (Int x) (ComparativeOp "<") (Int y) = x < y
-logicComparative (Float x) (ComparativeOp "<") (Float y) = x < x
+logicComparative (Float x) (ComparativeOp "<") (Float y) = x < y
 logicComparative (Int x) (ComparativeOp "<") (Float y) = fromIntegral x < y
 logicComparative (Float x) (ComparativeOp "<") (Int y) = x < fromIntegral y
 logicComparative (Int x) (ComparativeOp "<=") (Int y) = x <= y
-logicComparative (Float x) (ComparativeOp "<=") (Float y) = x <= x
+logicComparative (Float x) (ComparativeOp "<=") (Float y) = x <= y
 logicComparative (Int x) (ComparativeOp "<=") (Float y) = fromIntegral x <= y
 logicComparative (Float x) (ComparativeOp "<=") (Int y) = x <= fromIntegral y
 logicComparative (Int x) (ComparativeOp "==") (Int y) = x == y
-logicComparative (Float x) (ComparativeOp "==") (Float y) = x == x
+logicComparative (Float x) (ComparativeOp "==") (Float y) = x == y
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
+
+logicComparative (Boolean x) (ComparativeOp "==") (Boolean y) = stringToBool x == stringToBool y
+logicComparative (Boolean x) (ComparativeOp "!=") (Boolean y) = stringToBool x /= stringToBool y
 
 -- evalLogicExpression :: [Token] -> Bool
 
