@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds -fno-warn-missing-signatures #-}
 {-# LANGUAGE CPP #-}
-{-# LINE 1 "src/lexer.x" #-}
+{-# LINE 1 "./src/lexer.x" #-}
 
 module Lexer where
 import System.IO
@@ -15515,7 +15515,7 @@ alex_actions = array (0 :: Int, 98)
   , (0,alex_action_23)
   ]
 
-{-# LINE 44 "src/lexer.x" #-}
+{-# LINE 44 "./src/lexer.x" #-}
 
 
 data Token =

@@ -44,30 +44,37 @@ arrayAccess =
     c <- intToken
     d <- blockEndToken "]"
     return (a:b:c:d:[]))
--- arrayAccess :: ParsecT [Token] [Type] IO [Token]
--- arrayAccess = 
---     do
---     z <- getInput
---     a <- idToken
---     liftIO(print z)
---     liftIO(print "oie 2")
---     b <- blockBeginToken "["
---     c <- intToken
---     d <- blockEndToken "]"
---     return (a:b:c:d:[])
-    -- open <- blockBeginToken "["
-    --       values <- digitSequence <|> arraySequence
-    --       close <- blockEndToken "]"
-    --       return (open:values++[close])
+
+positionSequence = do
+        b <- blockBeginToken "["
+        c <- intToken
+        d <- blockEndToken "]"
+        next <- remaining_positions
+        return(b:c:[d]++next)
+
+remaining_positions :: ParsecT [Token] u IO [Token]
+remaining_positions = (do 
+                       a <- positionSequence
+                       return (a)) <|> (return [])
 
 literal_from_array:: ParsecT [Token] [Type] IO(Token)
 literal_from_array =  do
                     a <- idToken
-                    b <- blockBeginToken "["
-                    c <- intToken
-                    d <- blockEndToken "]"
+                    b <- positionSequence
                     s1 <- getState
-                    return (fromTypeX ( fst (symtableArraySearch s1 (getValueInt c) (getVariableName a) "" ))) 
+
+                    liftIO(print s1)
+                    return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
+                    
+getIndexes:: [Token] -> [Int] -> [Int]
+getIndexes [] indexes = indexes
+getIndexes ((index):t) indexes = 
+    if isInt index then indexes ++ (getValueInt index) : getIndexes t indexes
+    else getIndexes t indexes
+
+isInt :: Token -> Bool
+isInt (Lexer.Int a) = True
+isInt _ = False
 
 getValueInt :: Token -> Int
 getValueInt (Lexer.Int a) = a

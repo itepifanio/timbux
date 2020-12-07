@@ -1,5 +1,4 @@
 Let crossProduct
-    array a = [1, 2, 3];
-    int somatorio = a[2];
-    int s2 = a[1] * 2;
+    array a = [99, 98];
+    int somatorio = a[1];
 Ghbc

@@ -66,26 +66,26 @@ symtableSearch ((MyType a id es):ts) variavel es2 =
     else symtableSearch ts variavel es2
 symtableSearch ((MyArray a id es sla):ts) variavel es2 = symtableSearch ts variavel es2
 
-searchIndex :: [Int] -> Int -> Bool
-searchIndex [] _ = False
-searchIndex (i:idx) index = 
-    if i == index then True
-    else searchIndex idx index
+-- searchIndex :: [Int] -> Int -> Bool
+-- searchIndex [] _ = False
+-- searchIndex (i:idx) index = 
+--     if i == index then True
+--     else searchIndex idx index
 
 -- MyArray [(Typex, [Int])] String String [Int]
-arraySearch :: [(Typex, [Int])] -> Int -> (Typex, Bool)
+arraySearch :: [(Typex, [Int])] -> [Int] -> (Typex, Bool)
 arraySearch [] _ = ((MyInt 0), False)
-arraySearch (((MyInt value), index):t) idx = 
-    if searchIndex index idx then ((MyInt value), True) 
-    else arraySearch t idx
+arraySearch (((MyInt value), index):t) idxs = 
+    if index == idxs then ((MyInt value), True) 
+    else arraySearch t idxs
 
 -- MyArray [(Typex, [Int])] String String [Int]
-symtableArraySearch :: [Type] -> Int -> String -> String -> (Typex, Bool)
+symtableArraySearch :: [Type] -> [Int] -> String -> String -> (Typex, Bool)
 symtableArraySearch [] _ _ _ = ((MyInt 0), False)
-symtableArraySearch ((MyType _ _ _):ts) index variavel es2 = symtableArraySearch ts index variavel es2
-symtableArraySearch ((MyArray a id es sla):ts) index variavel es2 = 
-    if id == variavel && es == es2 then arraySearch a index 
-    else symtableArraySearch ts index variavel es2
+symtableArraySearch ((MyType _ _ _):ts) indexes variavel es2 = symtableArraySearch ts indexes variavel es2
+symtableArraySearch ((MyArray a id es sla):ts) indexes variavel es2 = 
+    if id == variavel && es == es2 then arraySearch a indexes 
+    else symtableArraySearch ts indexes variavel es2
 
 symtableInsert :: Type -> [Type] -> [Type]
 symtableInsert symbol [] = [symbol]
