@@ -1,4 +1,6 @@
 Let crossProduct
+    int l = input(int);
+    int c = input(int);
     array a = [];
     a[0][0] = 1;
     a[0][1] = 2;

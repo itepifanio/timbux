@@ -24,7 +24,6 @@ literal_values =  do
 
 literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
 literal_from_name =  do
-                    s <- getInput
                     a <- idToken
                     s1 <- getState
                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" ))) 
@@ -34,7 +33,7 @@ arrayAccess =
     (do
     a <- idToken
     b <- blockBeginToken "["
-    c <- intToken
+    c <- intToken 
     d <- blockEndToken "]"
     e <- semicolonToken
     return (a:b:c:d:e:[])) <|>
@@ -47,12 +46,12 @@ arrayAccess =
 
 positionSequence = do
         b <- blockBeginToken "["
-        c <- intToken
+        c <- intToken <|> literal_from_name
         d <- blockEndToken "]"
         next <- remaining_positions
         return(b:c:[d]++next)
 
-remaining_positions :: ParsecT [Token] u IO [Token]
+-- remaining_positions :: ParsecT [Token] u IO [Token]
 remaining_positions = (do 
                        a <- positionSequence
                        return (a)) <|> (return [])
