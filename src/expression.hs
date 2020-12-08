@@ -62,8 +62,6 @@ literal_from_array =  do
                     a <- idToken
                     b <- positionSequence
                     s1 <- getState
-
-                    liftIO(print s1)
                     return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
                     
 getIndexes:: [Token] -> [Int] -> [Int]

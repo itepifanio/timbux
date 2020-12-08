@@ -64,11 +64,15 @@ logicalOpToken = tokenPrim show update_pos get_token where
     get_token _           = Nothing
 
 array :: ParsecT [Token] u IO [Token]
-array = do
+array = (do
+            open <- blockBeginToken "["
+            close <- blockEndToken "]"
+            return (open:[close]))  <|> 
+        (do
           open <- blockBeginToken "["
           values <- digitSequence <|> arraySequence
           close <- blockEndToken "]"
-          return (open:values++[close])
+          return (open:values++[close]))
 
 -- commaToken :: String -> Parsec [Token] st Token
 commaToken stmt = tokenPrim show update_pos get_token where

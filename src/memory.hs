@@ -151,11 +151,11 @@ fromTypeX :: Typex -> Token
 fromTypeX (MyInt a) = Int a
 fromTypeX (MyFloat a) = Float a
 fromTypeX (MyString a) = String a
-
+-- MyArray [(Typex, [Int])] String String [Int]
 -- Converte um array de tokens em um datatype Type MyArray
 convertArrayStmtsToMyArray :: [Token] -> String -> String  -> Type
 convertArrayStmtsToMyArray (x:xs) nome escopo = 
-    MyArray arrayDeTuplasTypexInt nome escopo [(snd (last arrayDeTuplasTypexInt) !! 0) + 1, 1] -- Fixado arrays unidimencionais por enquanto
+    if null arrayDeTuplasTypexInt then MyArray [] nome escopo [] else MyArray arrayDeTuplasTypexInt nome escopo [(snd (last arrayDeTuplasTypexInt) !! 0) + 1, 1] -- Fixado arrays unidimencionais por enquanto
     where arrayDeTuplasTypexInt = (convertTypeTokensToArray (x:xs) nome escopo 0)
 
 -- Função auxiliar que converte o datatype para MyArray
@@ -163,7 +163,17 @@ convertTypeTokensToArray :: [Token] -> String -> String -> Int -> [(Typex, [Int]
 convertTypeTokensToArray [] nome escopo i = []
 convertTypeTokensToArray (t:ts) nome escopo i
     | isBracketToken(t) || isCommaToken(t) = convertTypeTokensToArray ts nome escopo i --ignora os tokens de comma e blockbegin, blockend
-    | otherwise = [((fromTypeToTypex $ fromTokenX t nome escopo), [i])] ++ (convertTypeTokensToArray ts nome escopo (i+1))
+    | otherwise = [((fromTypeToTypex (fromTokenX t nome escopo), [i]))] ++ (convertTypeTokensToArray ts nome escopo (i+1))
+-- MyArray [((MyInt 99), [0]), ((MyInt 99), [0]) ]
+-- ((MyInt 100), [0]) ++ [((MyInt 99), [0]), ((MyInt 99), [0])] = [((MyInt 100), [0]) , ((MyInt 99), [0]), ((MyInt 99), [0])]  
+-- a[0][1] = 1 |           (Lexer.Int a) [0,1] variável escopo memória 
+
+symtableInsertIndexArray :: [Token] -> [Int] -> String -> String -> [Type] -> [Type] 
+symtableInsertIndexArray _ _ _ _ [] = []
+symtableInsertIndexArray (token:t) indexes nome es ((MyType typex nome2 es2):ts) = (MyType typex nome2 es2) : symtableInsertIndexArray (token:t) indexes nome es ts
+symtableInsertIndexArray (token:t) indexes nome es ((MyArray list nome2 es2 d):ts) = 
+    if nome == nome2 && es2 == es then ((MyArray ([(fromTokenToTypex token, indexes)] ++ list) nome es d):ts)
+    else (MyArray list nome2 es2 d) : symtableInsertIndexArray (token:t) indexes nome es ts
 
 -- TODO::mover as funções abaixo para um novo arquivo posteriormente
 
@@ -198,6 +208,11 @@ isIdToken _               = False
 
 fromTypeToTypex :: Type -> Typex
 fromTypeToTypex (MyType t _ _) = t
+
+fromTokenToTypex :: Token -> Typex
+fromTokenToTypex (Lexer.Int a) = (MyInt a)
+fromTokenToTypex (Lexer.Float a) = (MyFloat a)
+fromTokenToTypex (Lexer.String a) = (MyString a)
 
 genericValue :: Token -> Token
 genericValue (PrimitiveType "int") = (Lexer.Int 0)

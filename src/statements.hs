@@ -142,7 +142,7 @@ singletonToken = do
 
 assign :: ParsecT [Token] [Type] IO([Token])
 assign = do
-        a <- instAssign <|> justAssign
+        a <- justAssignArray <|> instAssign <|> justAssign
         b <- semicolonToken
         return (a++[b])
 
@@ -158,10 +158,25 @@ instAssign = do
         --   else 
           updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
           return (a:b:c:d)
+-- Token -> [Int] -> String -> String -> [Type] -> [Type]
+justAssignArray :: ParsecT [Token] [Type] IO [Token]
+justAssignArray = do
+          a <- idToken
+          b <- positionSequence 
+          c <- assignToken
+          d <- singletonToken <|> inputStmt
+          s1 <- getState
+          updateState (symtableInsertIndexArray d (getIndexes b []) (getVariableName a) "")
+          s2 <- getState
+          liftIO (print s2)
+        --   if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
+        --       then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+        --   else fail ("Type don't match with type of variable " ++ getVariableName a)    
+          return (a:b ++ [c] ++ d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
 justAssign = do
-          a <- idToken
+          a <- idToken 
           b <- assignToken
           c <- singletonToken <|> array <|> inputStmt
           s1 <- getState
