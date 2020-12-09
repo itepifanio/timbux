@@ -25,19 +25,19 @@ Let problemaDois
         x = input(int);
     endwhile
     
-    print("Intervalo [0, 25]");
-    print(cont1);
-    print(" ");
+    print("Intervalo [0, 25]: ");
+    println(cont1);
+    println(" ");
 
-    print("Intervalo (25, 50]");
-    print(cont2);
-    print(" ");
+    print("Intervalo (25, 50]: ");
+    println(cont2);
+    println(" ");
 
-    print("Intervalo (50, 75]");
-    print(cont3);
-    print(" ");
+    print("Intervalo (50, 75]: ");
+    println(cont3);
+    println(" ");
 
-    print("Intervalo (75, 100]");
-    print(cont4);
-    print(" ");
+    print("Intervalo (75, 100]: ");
+    println(cont4);
+    println(" ");
 Ghbc

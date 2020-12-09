@@ -7,6 +7,7 @@ import Statement
 import Text.Parsec
 import Data.Functor.Identity
 import System.IO.Unsafe
+import System.Environment
 
 program :: ParsecT [Token] [Type] IO [Token]
 program = do
@@ -27,7 +28,10 @@ parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens
 
 main :: IO ()
-main = case unsafePerformIO (parser (getTokens "./program/programv2.pe")) of
-            { Left err -> print err; 
-              Right ans -> print ans
-            }
+main = do {
+          file <- getArgs;
+          case unsafePerformIO (parser (getTokens (file!!0))) of
+          { Left err -> print err; 
+            Right ans -> print ans
+          }
+}
