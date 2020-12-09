@@ -32,6 +32,6 @@ main = do {
           file <- getArgs;
           case unsafePerformIO (parser (getTokens (file!!0))) of
           { Left err -> print err; 
-            Right ans -> print ans
+            Right ans -> putStr ""
           }
 }
