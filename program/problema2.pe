@@ -1,32 +1,43 @@
 Let problemaDois
-    int cont = 0;
-    int contt = 0;
-    int conttt = 0;
-    int contttt = 0;
+    int cont1 = 0;
+    int cont2 = 0;
+    int cont3 = 0;
+    int cont4 = 0;
     
     int x = input(int);
 
     while(x >= 0)         
         if (x >= 0 && x <= 25)
-            cont = cont + 1;
+            cont1 = cont1 + 1;
         endif
 
         if(x > 25 && x <= 50)
-            contt = contt + 1;
+            cont2 = cont2 + 1;
         endif
 
         if(x > 50 && x <= 75)
-            conttt = conttt + 1;
+            cont3 = cont3 + 1;
         endif
 
         if(x > 75 && x <= 100)
-            contttt = contttt + 1;
+            cont4 = cont4 + 1;
         endif
         x = input(int);
     endwhile
+    
+    print("Intervalo [0, 25]");
+    print(cont1);
+    print(" ");
 
-    print(cont);
-    print(contt);
-    print(conttt);
-    print(contttt);
+    print("Intervalo (25, 50]");
+    print(cont2);
+    print(" ");
+
+    print("Intervalo (50, 75]");
+    print(cont3);
+    print(" ");
+
+    print("Intervalo (75, 100]");
+    print(cont4);
+    print(" ");
 Ghbc

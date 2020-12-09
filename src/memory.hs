@@ -24,6 +24,7 @@ convertTypexToPrimitiveType (MyFloat _) = PrimitiveType "float"
 convertTypexToPrimitiveType (MyString _) = PrimitiveType "string"
 
 getType :: [Type] -> String -> String -> Token
+getType ((MyArray a id es sla):ts) v es3 = getType ts v es3
 getType ((MyType a id es):ts) variavel es2 = 
     if id == variavel && es == es2 then convertTypexToPrimitiveType a
     else getType ts variavel es2

@@ -1,0 +1,27 @@
+Let problemaTres
+    array m1 = [];
+
+    println("Linhas matriz 1");
+    int ml1 = input(int);
+    
+    println("Colunas matriz 1");
+    int mc1 = input(int);
+
+
+    for(int i = 0; i < ml1; i = i + 1)
+        if(i <= ml1)
+            for(int j = 0; j < mc1; j = j + 1)
+                m1[i][j] = input(int);
+            endfor
+        endif
+    endfor
+
+    for(int i = 0; i < ml1; i = i + 1)
+        if(i <= ml1)
+            for(int j = 0; j < mc1; j = j + 1)
+                println(j);
+            endfor
+        endif
+        println(" ");
+    endfor
+Ghbc
