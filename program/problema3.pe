@@ -1,0 +1,34 @@
+Let problemaTres
+    print("Linhas matriz 1");
+    int ml1 = input(int);
+    
+    print("Colunas matriz 1");
+    int mc1 = input(int);
+
+    print("Linhas matriz 2");
+    int ml2 = input(int);
+    
+    print("Colunas matriz 2");
+    int mc2 = input(int);
+
+    array m1 = [];
+    array m2 = [];
+
+    for(int i = 0; i < ml1; i = i + 1)
+        if(i <= ml1)
+            for(int j = 0; j < mc1; j = j + 1)
+                m1[i][j] = input(int);
+            endfor
+        endif
+    endfor
+
+    for(int i = 0; i < ml1; i = i + 1)
+        if(i <= ml1)
+            for(int j = 0; j < mc1; j = j + 1)
+                print(m1[i][j]);
+                print(" ");
+            endfor
+        endif
+        println(" ");
+    endfor
+Ghbc

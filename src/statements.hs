@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 stmts :: ParsecT [Token] [Type] IO [Token]
 stmts = do
-        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt
+        first <- assign <|> ifStatement <|> whileStatement <|> forStatement <|> function <|> printStmt <|> printlnStmt
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
@@ -39,6 +39,19 @@ inputStmt = do
             return ([convert c input])
     else return [(genericValue c)]
 
+printlnStmt :: ParsecT [Token] [Type] IO([Token])
+printlnStmt = do 
+    a <- keywordToken "println"
+    b <- blockBeginToken "("
+    c <- expression
+    d <- blockEndToken ")"
+    e <- semicolonToken
+    s1 <- getState
+    if canOperate s1 
+        then liftIO (putStrLn (getValue c))
+    else updateState (symtableUpdateFlag 0)
+    return (a:b:c:[d] ++ [e])
+
 printStmt :: ParsecT [Token] [Type] IO([Token])
 printStmt = do 
     a <- keywordToken "print"
@@ -48,7 +61,7 @@ printStmt = do
     e <- semicolonToken
     s1 <- getState
     if canOperate s1 
-        then liftIO (putStrLn (getValue c))
+        then liftIO (putStr (getValue c))
     else updateState (symtableUpdateFlag 0)
     return (a:b:c:[d] ++ [e])
 
@@ -94,7 +107,7 @@ whileStatement = do
 
 ifStatement :: ParsecT [Token] [Type] IO([Token])
 ifStatement = do
-              a <- try ifElseStatement <|> onlyIfStatement
+              a <- onlyIfStatement
               return a
 
 onlyIfStatement :: ParsecT [Token] [Type] IO([Token])
@@ -114,15 +127,13 @@ forStatement = do
     b <- blockBeginToken "("
     c <- assign
     d <- logicExpression
+    s1 <- getState
     if tokenToBool (d!!0)
         then updateState (symtableUpdateFlag 1)
     else updateState (symtableUpdateFlag 0)
     e <- semicolonToken
     f <- justAssign
     l <- blockEndToken  ")"
-
-    -- liftIO (print (z \\ takeUntil isKeywordToken z)) -- \\\\ é diferença total entre listas
-    -- setInput <- z ++ (z \\ takeUntil isKeywordToken z)
     m <- stmts
     n <- keywordToken "endfor"
     y <- getState
@@ -145,7 +156,7 @@ singletonToken = do
 
 assign :: ParsecT [Token] [Type] IO([Token])
 assign = do
-        a <- instAssign <|> justAssign
+        a <- instAssign <|> try justAssign <|> justAssignArray
         b <- semicolonToken
         return (a++[b])
 
@@ -158,10 +169,23 @@ instAssign = do
           s1 <- getState
           if snd (symtableSearch s1 (getVariableName b) (lookupLastScope s1)) then
             updateState (symtableCanUpdate (fromToken d (getVariableName b) (lookupLastScope s1)))
-          else 
-            updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
-          s2 <- getState
+          else updateState (symtableInsert (fromToken d (getVariableName b) (lookupLastScope s1)))  
           return (a:b:c:d)
+          
+-- Token -> [Int] -> String -> String -> [Type] -> [Type]
+justAssignArray :: ParsecT [Token] [Type] IO [Token]
+justAssignArray = do
+          a <- idToken
+          b <- positionSequence 
+          c <- assignToken
+          d <- singletonToken <|> inputStmt
+          s1 <- getState
+          updateState (symtableInsertIndexArray d (getIndexes b []) (getVariableName a) "")
+          s2 <- getState
+        --   if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
+        --       then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
+        --   else fail ("Type don't match with type of variable " ++ getVariableName a)    
+          return (a:b ++ [c] ++ d)
 
 justAssign :: ParsecT [Token] [Type] IO [Token]
 justAssign = do
@@ -169,12 +193,12 @@ justAssign = do
           b <- assignToken
           c <- singletonToken <|> array <|> inputStmt
           s1 <- getState
-          if validarTipo (getType s1 (getVariableName a) (lookupLastScope s1)) c 
+          if validarTipo (getType s1 (getVariableName a) "") c 
               then updateState (symtableCanUpdate (fromToken c (getVariableName a) (lookupLastScope s1)))
           else fail ("Type don't match with type of variable " ++ getVariableName a)    
           s2 <- getState
+        --   return (a:d ++ b:c)
           return (a:b:c)
-          
 function :: ParsecT [Token] [Type] IO [Token]
 function = do
     a <- funToken
@@ -207,6 +231,22 @@ arguments = (do
         b <- idToken
         c <- remainingArguments
         return (a:b:c)) <|> (return [])
+
+-- arrayAccess :: ParsecT [Token] [Type] IO [Token]
+-- arrayAccess = 
+--     (do
+--     a <- idToken
+--     b <- blockBeginToken "["
+--     c <- intToken
+--     d <- blockEndToken "]"
+--     e <- semicolonToken
+--     return (a:b:c:d:e:[])) <|>
+--     (do
+--     a <- idToken
+--     b <- blockBeginToken "["
+--     c <- intToken
+--     d <- blockEndToken "]"
+--     return (a:b:c:d:[]))
 
 remainingArguments :: ParsecT [Token] [Type] IO [Token]
 remainingArguments = (do

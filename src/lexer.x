@@ -7,7 +7,7 @@ import System.IO.Unsafe
 %wrapper "basic"
 
 $digit = 0-9           -- digits
-$alpha = [a-zA-Z]      -- alphabetic characters
+$alpha = [a-zA-Z0-9]      -- alphabetic characters
 $op = [\#\+\-\*]       -- operacoes
 $whitespace = [\ \t\b]
 $blockBegin = [\(\[\{]
@@ -37,7 +37,7 @@ tokens :-
   $digit+\.$digit+                                    { \p -> Float (read p) }
   (true|false)                                        { \p -> Boolean p }
   (int|float|string|array|boolean|matrix)             { \p -> PrimitiveType p}
-  (if|endif|else|for|endfor|continue|break|while|endwhile|const|var|return|print|input) { \p -> Keyword p}
+  (if|endif|else|for|endfor|continue|break|while|endwhile|const|var|return|print|println|input) { \p -> Keyword p}
   (\, | \" | \')                                      { \p -> Comma p}        
   $alpha+                                             { \p -> Name p }
 

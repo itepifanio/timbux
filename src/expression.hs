@@ -5,16 +5,17 @@ import Token
 import Text.Parsec
 import Memory
 
+
 import Control.Monad.IO.Class
 import System.IO.Unsafe
 
 -- funções para o avaliador de expressões
 
 expression :: ParsecT [Token] [Type] IO(Token)
-expression = try bin_expression <|> una_expression
+expression = try bin_expression  <|> una_expression
 
 una_expression :: ParsecT [Token] [Type] IO(Token)
-una_expression = literal_values <|> literal_from_name
+una_expression = literal_values <|> try literal_from_array <|> literal_from_name
 
 literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
 literal_values =  do
@@ -27,16 +28,64 @@ literal_from_name =  do
                     s1 <- getState
                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" ))) 
 
+arrayAccess :: ParsecT [Token] [Type] IO [Token]
+arrayAccess = 
+    (do
+    a <- idToken
+    b <- blockBeginToken "["
+    c <- intToken 
+    d <- blockEndToken "]"
+    e <- semicolonToken
+    return (a:b:c:d:e:[])) <|>
+    (do
+    a <- idToken
+    b <- blockBeginToken "["
+    c <- intToken
+    d <- blockEndToken "]"
+    return (a:b:c:d:[]))
+
+positionSequence = do
+        b <- blockBeginToken "["
+        c <- intToken <|> literal_from_name
+        d <- blockEndToken "]"
+        next <- remaining_positions
+        return(b:c:[d]++next)
+
+-- remaining_positions :: ParsecT [Token] u IO [Token]
+remaining_positions = (do 
+                       a <- positionSequence
+                       return (a)) <|> (return [])
+
+literal_from_array:: ParsecT [Token] [Type] IO(Token)
+literal_from_array =  do
+                    a <- idToken
+                    b <- positionSequence
+                    s1 <- getState
+                    return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
+                    
+getIndexes:: [Token] -> [Int] -> [Int]
+getIndexes [] indexes = indexes
+getIndexes ((index):t) indexes = 
+    if isInt index then indexes ++ (getValueInt index) : getIndexes t indexes
+    else getIndexes t indexes
+
+isInt :: Token -> Bool
+isInt (Lexer.Int a) = True
+isInt _ = False
+
+getValueInt :: Token -> Int
+getValueInt (Lexer.Int a) = a
+
 bin_expression :: ParsecT [Token] [Type] IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                   n1 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array <|> literal_from_name
                    result <- eval_remaining n1
                    return (result)
 
 eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                      n2 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array <|> literal_from_name
                       result <- eval_remaining (eval n1 op n2)
                       return (result) 
                     <|> return (n1) 
@@ -106,16 +155,5 @@ logicComparative (Int x) (ComparativeOp "==") (Int y) = x == y
 logicComparative (Float x) (ComparativeOp "==") (Float y) = x == y
 logicComparative (Int x) (ComparativeOp "==") (Float y) = fromIntegral x == y
 logicComparative (Float x) (ComparativeOp "==") (Int y) = x == fromIntegral y
-
 logicComparative (Boolean x) (ComparativeOp "==") (Boolean y) = stringToBool x == stringToBool y
 logicComparative (Boolean x) (ComparativeOp "!=") (Boolean y) = stringToBool x /= stringToBool y
-
--- evalLogicExpression :: [Token] -> Bool
-
-
--- forExpression :: Bool -> (a -> b) -> Bool
--- forExpression a f =
---     if a == true then forExpression a
---     else False
-
-

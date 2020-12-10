@@ -1,12 +1,16 @@
 Let crossProduct
-    int somatorio = 0;
-    for (int i = 0; i >= somatorio; i = i + 1)
-        somatorio = somatorio + 1;
-        somatorio = 20; 
-    endfor
-    int n = input(int);
-    if(n >= 0) 
-        n = 1000;
-        print(n);
+    int l = input(int);
+    int c = input(int);
+    if(c < 10)
+        print(c);
     endif
+    array a = [];
+    a[0][0] = 1;
+    a[0][1] = 2;
+    a[1][0] = 3;
+    a[1][1] = 4;
+    print(a[0][0]);
+    print(a[0][1]);
+    print(a[1][0]);
+    print(a[1][1]);
 Ghbc
